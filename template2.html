@@ -1,0 +1,498 @@
+<!--
+  WISSENSCHAFTSBAROMETER SCHWEIZ 2025 — DATEN-DASHBOARD
+  Self-contained. Data (n=1548, weighted gewdef_red) + translations + logo embedded.
+  Brand colours/font in :root. Languages DE/FR/IT/EN.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wissenschaftsbarometer Schweiz 2025 — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --wb-primary:#E30613; --wb-primary-dark:#B00410;          /* WiB red (sampled from logo) */
+  --wb-ink:#1A1A1A; --wb-muted:#5F6368;
+  --wb-bg:#FFFFFF; --wb-surface:#F6F4F2; --wb-surface-2:#EFEBE7; --wb-line:#E3DED9;
+  --wb-font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wb-bg);color:var(--wb-ink);font-family:var(--wb-font);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:0 22px}
+a{color:var(--wb-primary)}
+
+header.top{background:#fff;border-bottom:3px solid var(--wb-primary);padding:16px 0}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
+.brand img{height:54px;width:auto;display:block}
+.brand .tt{min-width:0}
+.brand .tt h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.brand .tt p{margin:2px 0 0;font-size:13px;color:var(--wb-muted)}
+.langs{display:inline-flex;border:1px solid var(--wb-line);border-radius:9px;overflow:hidden}
+.langs button{appearance:none;border:0;background:none;color:var(--wb-muted);font:inherit;font-weight:600;font-size:13px;padding:8px 12px;cursor:pointer}
+.langs button[aria-pressed="true"]{background:var(--wb-primary);color:#fff}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--wb-line);margin-top:20px;flex-wrap:wrap}
+.tab{appearance:none;border:0;background:none;font:inherit;font-weight:600;color:var(--wb-muted);padding:13px 16px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;font-size:15px}
+.tab:hover{color:var(--wb-ink)}
+.tab[aria-selected="true"]{color:var(--wb-primary);border-bottom-color:var(--wb-primary)}
+.panel{padding:24px 0 64px}
+.lede{color:var(--wb-muted);max-width:74ch;margin:0 0 20px;font-size:14.5px}
+
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:13px;background:var(--wb-surface);border:1px solid var(--wb-line);border-radius:14px;padding:17px;margin-bottom:22px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--wb-muted);text-transform:uppercase}
+.field select{font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--wb-line);border-radius:9px;background:#fff;color:var(--wb-ink);width:100%}
+.field select:focus-visible{outline:2px solid var(--wb-primary);outline-offset:1px}
+.seg{display:flex;width:100%;border:1px solid var(--wb-line);border-radius:9px;overflow:hidden;background:#fff}
+.seg button{appearance:none;border:0;background:none;font:inherit;font-size:13.5px;padding:9px 8px;cursor:pointer;color:var(--wb-muted);flex:1 1 0;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--wb-primary);color:#fff;font-weight:600}
+
+.stage{border:1px solid var(--wb-line);border-radius:14px;padding:22px;background:#fff}
+.stage h2{margin:0 0 4px;font-size:18px;font-weight:700;line-height:1.25}
+.stage .qtext{color:var(--wb-muted);font-size:13.5px;margin:0 0 4px}
+.stage .meta{color:var(--wb-muted);font-size:12.5px;margin:0 0 14px}
+.chart-wrap{position:relative;width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:14px 0 2px}
+.legend .it{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--wb-ink)}
+.legend .sw{width:13px;height:13px;border-radius:3px;flex:0 0 auto}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{appearance:none;font:inherit;font-weight:600;font-size:14px;border-radius:9px;padding:10px 15px;cursor:pointer;border:1px solid var(--wb-primary);background:var(--wb-primary);color:#fff}
+.btn:hover{background:var(--wb-primary-dark);border-color:var(--wb-primary-dark)}
+.btn.ghost{background:#fff;color:var(--wb-primary)}
+.btn.ghost:hover{background:var(--wb-surface)}
+details.tablewrap{margin-top:18px;border-top:1px solid var(--wb-line);padding-top:6px}
+details.tablewrap summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--wb-primary);padding:8px 0;list-style:none}
+details.tablewrap summary::-webkit-details-marker{display:none}
+details.tablewrap summary::before{content:"▸ "}
+details[open].tablewrap summary::before{content:"▾ "}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--wb-line)}
+th{color:var(--wb-muted);font-weight:600;background:var(--wb-surface)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+footer.foot{border-top:1px solid var(--wb-line);padding:22px 0 50px;color:var(--wb-muted);font-size:12.5px}
+footer.foot b{color:var(--wb-ink)}
+.hidden{display:none!important}
+.kv th{width:38%}
+@media(max-width:620px){.brand .tt h1{font-size:16px}.brand img{height:44px}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">
+    <img src="__WB_LOGO__" alt="Wissenschaftsbarometer Schweiz">
+    <div class="tt"><h1 id="hdr-title"></h1><p id="hdr-sub"></p></div>
+  </div>
+  <div class="langs" id="langs" role="group" aria-label="Language">
+    <button data-l="de" aria-pressed="true">DE</button>
+    <button data-l="fr" aria-pressed="false">FR</button>
+    <button data-l="it" aria-pressed="false">IT</button>
+    <button data-l="en" aria-pressed="false">EN</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-e" aria-selected="true">·</button>
+    <button class="tab" role="tab" id="tab-i" aria-selected="false">·</button>
+  </div>
+
+  <section class="panel" id="panel-e" role="tabpanel">
+    <p class="lede" id="e-lede"></p>
+    <div class="controls">
+      <div class="field"><label id="lb-var"></label><select id="c-var"></select></div>
+      <div class="field"><label id="lb-group"></label><select id="c-group"></select></div>
+      <div class="field"><label id="lb-filter"></label><select id="c-filter"></select></div>
+      <div class="field"><label id="lb-display"></label><div class="seg" id="c-display"></div></div>
+      <div class="field"><label id="lb-chart"></label><div class="seg" id="c-chart"></div></div>
+      <div class="field"><label id="lb-weight"></label><div class="seg" id="c-weight"></div></div>
+    </div>
+    <div class="stage" id="stage-e"></div>
+  </section>
+
+  <section class="panel hidden" id="panel-i" role="tabpanel">
+    <p class="lede" id="i-lede"></p>
+    <table class="kv"><tbody id="i-body"></tbody></table>
+    <p class="lede" id="i-foot" style="margin-top:20px"></p>
+  </section>
+</div>
+<footer class="foot"><div class="wrap" id="foot"></div></footer>
+
+<script>/* __WB_TRANSLATIONS__ */</script>
+<script>
+const WB = __WB_DATA__;
+
+const I18N = {
+ ui:{
+  title:{de:"Daten-Dashboard 2025",fr:"Tableau de bord 2025",it:"Cruscotto dati 2025",en:"Data Dashboard 2025"},
+  sub:{de:"Einstellungen der Schweizer Bevölkerung zu Wissenschaft",fr:"Attitudes de la population suisse envers la science",it:"Atteggiamenti della popolazione svizzera verso la scienza",en:"Swiss public attitudes towards science"},
+  tabE:{de:"Analyse",fr:"Analyse",it:"Analisi",en:"Analysis"},
+  tabI:{de:"Über die Daten",fr:"À propos des données",it:"Informazioni sui dati",en:"About the data"},
+  eLede:{de:"Wählen Sie eine Frage, schlüsseln Sie sie nach Merkmalen auf und wählen Sie die Darstellung. Voreingestellt sind gewichtete Daten (repräsentativ, n = 1’548).",
+         fr:"Choisissez une question, ventilez-la par caractéristiques et choisissez l'affichage. Données pondérées par défaut (représentatif, n = 1’548).",
+         it:"Scelga una domanda, la suddivida per caratteristiche e scelga la visualizzazione. Dati ponderati per impostazione predefinita (rappresentativi, n = 1’548).",
+         en:"Pick a question, break it down by characteristics and choose the display. Weighted data by default (representative, n = 1,548)."},
+  var:{de:"Frage",fr:"Question",it:"Domanda",en:"Question"},
+  group:{de:"Aufschlüsseln nach",fr:"Ventiler par",it:"Suddividere per",en:"Break down by"},
+  filter:{de:"Filter",fr:"Filtre",it:"Filtro",en:"Filter"},
+  display:{de:"Darstellung",fr:"Affichage",it:"Visualizzazione",en:"Display"},
+  chart:{de:"Diagrammtyp",fr:"Type de graphique",it:"Tipo di grafico",en:"Chart type"},
+  weight:{de:"Gewichtung",fr:"Pondération",it:"Ponderazione",en:"Weighting"},
+  none:{de:"— gesamte Bevölkerung —",fr:"— population entière —",it:"— intera popolazione —",en:"— whole population —"},
+  noFilter:{de:"— kein Filter —",fr:"— aucun filtre —",it:"— nessun filtro —",en:"— no filter —"},
+  dist:{de:"Verteilung",fr:"Distribution",it:"Distribuzione",en:"Distribution"},
+  mean:{de:"Mittelwerte",fr:"Moyennes",it:"Medie",en:"Means"},
+  t_stacked:{de:"Gestapelt",fr:"Empilé",it:"Impilato",en:"Stacked"},
+  t_grouped:{de:"Gruppiert",fr:"Groupé",it:"Raggruppato",en:"Grouped"},
+  t_diverging:{de:"Divergierend",fr:"Divergent",it:"Divergente",en:"Diverging"},
+  t_donut:{de:"Donut",fr:"Anneau",it:"Anello",en:"Donut"},
+  t_bars:{de:"Balken",fr:"Barres",it:"Barre",en:"Bars"},
+  t_radar:{de:"Radar",fr:"Radar",it:"Radar",en:"Radar"},
+  t_lollipop:{de:"Lollipop",fr:"Sucette",it:"Lollipop",en:"Lollipop"},
+  wOn:{de:"Gewichtet",fr:"Pondéré",it:"Ponderato",en:"Weighted"},
+  wOff:{de:"Ungewichtet",fr:"Non pond.",it:"Non pond.",en:"Unweighted"},
+  dlPng:{de:"Diagramm als PNG",fr:"Graphique en PNG",it:"Grafico in PNG",en:"Chart as PNG"},
+  dlCsv:{de:"Daten als CSV",fr:"Données en CSV",it:"Dati in CSV",en:"Data as CSV"},
+  total:{de:"Gesamt",fr:"Total",it:"Totale",en:"Total"},
+  basis:{de:"Basis",fr:"Base",it:"Base",en:"Base"},
+  weighted:{de:"gewichtet",fr:"pondéré",it:"ponderato",en:"weighted"},
+  unweighted:{de:"ungewichtet",fr:"non pondéré",it:"non ponderato",en:"unweighted"},
+  split:{de:"Split-Ballot (halbe Stichprobe)",fr:"Split-ballot (demi-échantillon)",it:"Split-ballot (metà campione)",en:"split-ballot (half sample)"},
+  meanWord:{de:"Mittelwert",fr:"Moyenne",it:"Media",en:"Mean"},
+  se:{de:"Standardfehler",fr:"Erreur-type",it:"Errore standard",en:"Standard error"},
+  showTable:{de:"Datentabelle anzeigen",fr:"Afficher le tableau",it:"Mostra tabella",en:"Show data table"},
+  cat:{de:"Kategorie",fr:"Catégorie",it:"Categoria",en:"Category"},
+  share:{de:"Anteil",fr:"Part",it:"Quota",en:"Share"},
+  foot:{de:"<b>Wissenschaftsbarometer Schweiz 2025</b>, Universität Zürich (IKMZ). Querschnitt n = 1’548, gewichtet (gewdef_red). Quelle bei Verwendung nennen: «WissensCHaftsbarometer Schweiz 2025».",
+        fr:"<b>Baromètre Scientifique Suisse 2025</b>, Université de Zurich (IKMZ). Échantillon transversal n = 1’548, pondéré (gewdef_red). Citer la source : « Baromètre Scientifique Suisse 2025 ».",
+        it:"<b>Barometro Scientifico Svizzero 2025</b>, Università di Zurigo (IKMZ). Campione trasversale n = 1’548, ponderato (gewdef_red). Citare la fonte: «Barometro Scientifico Svizzero 2025».",
+        en:"<b>Science Barometer Switzerland 2025</b>, University of Zurich (IKMZ). Cross-sectional n = 1,548, weighted (gewdef_red). Please cite: “Science Barometer Switzerland 2025”."},
+  iLede:{de:"Das Wissenschaftsbarometer Schweiz erhebt seit 2016 alle drei Jahre, wie die Schweizer Bevölkerung zu Wissenschaft steht und sich informiert.",
+         fr:"Depuis 2016, le Baromètre Scientifique Suisse mesure tous les trois ans le rapport de la population à la science.",
+         it:"Dal 2016 il Barometro Scientifico Svizzero misura ogni tre anni il rapporto della popolazione con la scienza.",
+         en:"Since 2016 the Science Barometer Switzerland measures every three years how the Swiss public relates to science."},
+  iFoot:{de:"Vollständige Ergebnisse im Tabellenband; der anonymisierte Datensatz wird zur wissenschaftlichen Nachnutzung bereitgestellt.",
+         fr:"Résultats complets dans le volume de tableaux ; le jeu de données anonymisé est mis à disposition pour la réutilisation scientifique.",
+         it:"Risultati completi nel volume delle tabelle; il set di dati anonimizzato è disponibile per il riutilizzo scientifico.",
+         en:"Full results in the table volume; the anonymised dataset is provided for scientific reuse."}
+ },
+ method:{rows:[
+   ["method",{de:"Methode",fr:"Méthode",it:"Metodo",en:"Method"},{de:"Schriftliche Befragung (online und Papier), SRPH-Stichprobenrahmen des BFS",fr:"Enquête écrite (en ligne et papier), base SRPH de l'OFS",it:"Indagine scritta (online e cartacea), quadro SRPH dell'UST",en:"Written survey (online and paper), FSO SRPH sampling frame"}],
+   ["field",{de:"Feldzeit",fr:"Période",it:"Periodo",en:"Field period"},{de:"13. Juni – 10. Juli 2025",fr:"13 juin – 10 juillet 2025",it:"13 giugno – 10 luglio 2025",en:"13 June – 10 July 2025"}],
+   ["n",{de:"Stichprobe",fr:"Échantillon",it:"Campione",en:"Sample"},{de:"1’548 Personen ab 16 (DCH 990, FCH 317, ICH 241)",fr:"1’548 pers. dès 16 ans",it:"1’548 pers. da 16 anni",en:"1,548 people aged 16+"}],
+   ["w",{de:"Gewichtung",fr:"Pondération",it:"Ponderazione",en:"Weighting"},{de:"Geschlecht, Alter, Sprachregion, Kanton, Siedlungsart, Bildung",fr:"Sexe, âge, région ling., canton, type de commune, formation",it:"Sesso, età, regione ling., cantone, tipo di comune, formazione",en:"Gender, age, language region, canton, settlement type, education"}],
+   ["sb",{de:"Split-Ballot",fr:"Split-ballot",it:"Split-ballot",en:"Split-ballot"},{de:"Module «KI» und «Kritik & Angriffe» an je halber Stichprobe",fr:"Modules « IA » et « critiques & attaques » sur un demi-échantillon",it:"Moduli «IA» e «critiche & attacchi» su metà campione",en:"Modules “AI” and “criticism & attacks” on half the sample each"}],
+   ["seg",{de:"Segmente",fr:"Segments",it:"Segmenti",en:"Segments"},{de:"Vier Bevölkerungsgruppen aus einer Clusteranalyse (cluster_lg)",fr:"Quatre groupes issus d'une analyse typologique (cluster_lg)",it:"Quattro gruppi da un'analisi tipologica (cluster_lg)",en:"Four population groups from a cluster analysis (cluster_lg)"}],
+   ["org",{de:"Durchführung",fr:"Réalisation",it:"Realizzazione",en:"Conducted by"},{de:"Universität Zürich mit gfs.bern und Bundesamt für Statistik",fr:"Université de Zurich avec gfs.bern et l'OFS",it:"Università di Zurigo con gfs.bern e l'UST",en:"University of Zurich with gfs.bern and the FSO"}]
+ ]},
+ scales:{
+  agree5:{de:["stimme überhaupt nicht zu","2","3","4","stimme voll und ganz zu"],fr:["pas du tout d'accord","2","3","4","tout à fait d'accord"],it:["per niente d'accordo","2","3","4","del tutto d'accordo"],en:["strongly disagree","2","3","4","strongly agree"]},
+  freq5:{de:["nie","2","3","4","sehr häufig"],fr:["jamais","2","3","4","très souvent"],it:["mai","2","3","4","molto spesso"],en:["never","2","3","4","very often"]},
+  trust5:{de:["sehr gering","2","3","4","sehr hoch"],fr:["très faible","2","3","4","très élevé"],it:["molto basso","2","3","4","molto alto"],en:["very low","2","3","4","very high"]},
+  accept5:{de:["nie in Ordnung","2","3","4","unter Umständen in Ordnung"],fr:["inacceptable","2","3","4","acceptable parfois"],it:["mai giusto","2","3","4","giusto in certi casi"],en:["never acceptable","2","3","4","acceptable sometimes"]},
+  intensity5:{de:["überhaupt nicht","2","3","4","sehr stark"],fr:["pas du tout","2","3","4","énormément"],it:["per niente","2","3","4","moltissimo"],en:["not at all","2","3","4","very strongly"]},
+  satis5:{de:["überhaupt nicht zufrieden","2","3","4","sehr zufrieden"],fr:["pas du tout satisfait","2","3","4","très satisfait"],it:["per niente soddisfatto","2","3","4","molto soddisfatto"],en:["not at all satisfied","2","3","4","very satisfied"]},
+  know4:{de:["sicher falsch","eher falsch","eher richtig","sicher richtig"],fr:["certainement faux","plutôt faux","plutôt vrai","certainement vrai"],it:["sicuramente falso","probabilmente falso","probabilmente vero","sicuramente vero"],en:["surely false","probably false","probably true","surely true"]},
+  lr7:{de:["sehr links","2","3","Mitte","5","6","sehr rechts"],fr:["très à gauche","2","3","centre","5","6","très à droite"],it:["molto a sinistra","2","3","centro","5","6","molto a destra"],en:["far left","2","3","centre","5","6","far right"]}
+ },
+ demo:{
+  sprache:{lab:{de:"Sprachregion",fr:"Région linguistique",it:"Regione linguistica",en:"Language region"},cats:{de:["Deutschschweiz","Westschweiz","ital. Schweiz"],fr:["Suisse alémanique","Suisse romande","Suisse italienne"],it:["Svizzera tedesca","Svizzera romanda","Svizzera italiana"],en:["German-sp.","French-sp.","Italian-sp."]}},
+  gender:{lab:{de:"Geschlecht",fr:"Sexe",it:"Sesso",en:"Gender"},cats:{de:["Männlich","Weiblich","Divers"],fr:["Homme","Femme","Autre"],it:["Uomo","Donna","Altro"],en:["Male","Female","Other"]}},
+  age:{lab:{de:"Altersgruppe",fr:"Tranche d'âge",it:"Fascia d'età",en:"Age group"},cats:{de:["15–34","35–54","55+"],fr:["15–34","35–54","55+"],it:["15–34","35–54","55+"],en:["15–34","35–54","55+"]}},
+  edu:{lab:{de:"Bildung",fr:"Formation",it:"Formazione",en:"Education"},cats:{de:["Obligatorische Schule","Sekundarstufe II","Tertiärstufe"],fr:["Scolarité obligatoire","Secondaire II","Tertiaire"],it:["Scuola dell'obbligo","Secondario II","Terziario"],en:["Compulsory school","Upper secondary","Tertiary"]}},
+  urban:{lab:{de:"Siedlungsart",fr:"Type de commune",it:"Tipo di comune",en:"Settlement type"},cats:{de:["städtisch","intermediär","ländlich"],fr:["urbain","intermédiaire","rural"],it:["urbano","intermedio","rurale"],en:["urban","intermediate","rural"]}},
+  pol:{lab:{de:"Politische Haltung",fr:"Orientation politique",it:"Orientamento politico",en:"Political leaning"},cats:{de:["links","Mitte","rechts"],fr:["gauche","centre","droite"],it:["sinistra","centro","destra"],en:["left","centre","right"]}},
+  party:{lab:{de:"Partei",fr:"Parti",it:"Partito",en:"Party"},cats:{de:["SVP","SP","FDP","Mitte","GRÜNE","GLP","andere","keine"],fr:["UDC","PS","PLR","Le Centre","Verts","PVL","autre","aucun"],it:["UDC","PS","PLR","Il Centro","Verdi","PVL","altro","nessuno"],en:["SVP","SP","FDP","Centre","Greens","GLP","other","none"]}},
+  segment:{lab:{de:"Segment",fr:"Segment",it:"Segmento",en:"Segment"},cats:{de:["Passive Unterstützer","Sciencephiles","Kritisch Interessierte","Skeptische"],fr:["Soutiens passifs","Scientophiles","Intéressés critiques","Sceptiques"],it:["Sostenitori passivi","Scientofili","Interessati critici","Scettici"],en:["Passive supporters","Science-philes","Critically interested","Skeptics"]}}
+ },
+ sec:{
+  interest:{de:"Interesse",fr:"Intérêt",it:"Interesse",en:"Interest"},
+  themes:{de:"Forschungsthemen",fr:"Thèmes de recherche",it:"Temi di ricerca",en:"Research topics"},
+  trust:{de:"Vertrauen",fr:"Confiance",it:"Fiducia",en:"Trust"},
+  attitudes:{de:"Einstellungen",fr:"Attitudes",it:"Atteggiamenti",en:"Attitudes"},
+  media:{de:"Medien & Quellen",fr:"Médias & sources",it:"Media & fonti",en:"Media & sources"},
+  participation:{de:"Aktivitäten",fr:"Activités",it:"Attività",en:"Activities"},
+  literacy:{de:"Wissen & Selbstbild",fr:"Connaissances & image de soi",it:"Conoscenze & immagine di sé",en:"Knowledge & self-image"},
+  ai:{de:"Künstliche Intelligenz",fr:"Intelligence artificielle",it:"Intelligenza artificiale",en:"Artificial intelligence"},
+  criticism:{de:"Kritik & Angriffe",fr:"Critiques & attaques",it:"Critiche & attacchi",en:"Criticism & attacks"},
+  populism:{de:"Populismus",fr:"Populisme",it:"Populismo",en:"Populism"},
+  other:{de:"Weitere",fr:"Autres",it:"Altri",en:"Other"}
+ }
+};
+const SECORDER=['interest','themes','trust','attitudes','media','participation','literacy','ai','criticism','populism','other'];
+const SINGLE_BLOCKS=new Set(['interest','media_satisf','ai_use','ai_trust','sci_pol']);
+
+/* ---------- colours ---------- */
+const cssv=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const PRIMARY=()=>cssv('--wb-primary');
+const CAT=['#E30613','#1A1A1A','#2E6E8E','#E0A92B','#5B7FB0','#3F8C6E','#9AA0A6','#8E5A7D'];
+function hex2rgb(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function rgb2hex(a){return '#'+a.map(x=>Math.round(x).toString(16).padStart(2,'0')).join('');}
+const DIV_ANCHORS=['#C0392B','#E59866','#D7D2CC','#7FB3C6','#2E6E8E'].map(hex2rgb);
+function divPalette(n){ // n diverging colours red→grey→teal
+  const out=[];for(let i=0;i<n;i++){const t=n===1?0.5:i/(n-1);const x=t*(DIV_ANCHORS.length-1);
+    const lo=Math.floor(x),hi=Math.min(lo+1,DIV_ANCHORS.length-1),f=x-lo;
+    out.push(rgb2hex(DIV_ANCHORS[lo].map((c,k)=>c+(DIV_ANCHORS[hi][k]-c)*f)));}
+  return out;
+}
+
+/* ---------- state ---------- */
+let LANG='de', TAB='e', chart=null;
+let cust={var:'f11_2', group:'', filter:'', display:'dist', dtype:'stacked', mtype:'bars', weight:true};
+const T=o=>o&&o[LANG]!==undefined?o[LANG]:(o&&o.de)||'';
+const labOf=code=>{const t=WB_T.lab[code];if(t&&t[LANG])return t[LANG];return WB.meta[code].de;};
+const stemOf=code=>{const b=WB_T.blockOf[code];return b&&WB_T.stem[b]?T(WB_T.stem[b]):WB.meta[code].de;};
+const prefixOf=code=>{const b=WB_T.blockOf[code];return b&&WB_T.prefix[b]?T(WB_T.prefix[b]):'';};
+const scaleLabels=code=>I18N.scales[WB.meta[code].scale][LANG];
+
+/* ---------- compute ---------- */
+function rowMask(){const n=WB.n,m=new Array(n).fill(true);
+  if(cust.filter){const[g,v]=cust.filter.split(':');const arr=WB.demo[g],vv=+v;for(let i=0;i<n;i++)m[i]=arr[i]===vv;}
+  return m;}
+function statsFor(code, idxs, weighted){
+  const vals=WB.vars[code], np=WB.meta[code].np;
+  let counts=new Array(np).fill(0), wsum=0, sw2=0, msum=0, n=0;
+  for(const i of idxs){const v=vals[i];if(v===null||v===undefined)continue;
+    const w=weighted?WB.weights[i]:1;counts[v-1]+=w;wsum+=w;sw2+=w*w;msum+=w*v;n++;}
+  const p=wsum?counts.map(c=>c/wsum*100):counts;
+  const mean=wsum?msum/wsum:0;
+  let varw=0;for(const i of idxs){const v=vals[i];if(v==null)continue;const w=weighted?WB.weights[i]:1;varw+=w*(v-mean)*(v-mean);}
+  varw=wsum?varw/wsum:0;
+  const neff=sw2?(wsum*wsum)/sw2:0;
+  const se=neff>1?Math.sqrt(varw/neff):0;
+  return {p,n,mean,se};
+}
+function groups(){
+  const mask=rowMask();
+  if(!cust.group){const idxs=[];for(let i=0;i<WB.n;i++)if(mask[i])idxs.push(i);return [{code:0,label:T(I18N.ui.total),idxs}];}
+  const cats=I18N.demo[cust.group].cats[LANG],arr=WB.demo[cust.group],out=[];
+  for(let c=1;c<=cats.length;c++){const idxs=[];for(let i=0;i<WB.n;i++)if(mask[i]&&arr[i]===c)idxs.push(i);if(idxs.length)out.push({code:c,label:cats[c-1],idxs});}
+  return out;
+}
+const isSplit=code=>{const a=WB.vars[code];let c=0;for(const x of a)if(x!=null)c++;return c<WB.n*0.8;};
+
+/* ---------- chart helpers ---------- */
+function destroy(){if(chart){chart.destroy();chart=null;}}
+function box(host,h){const w=document.createElement('div');w.className='chart-wrap';w.style.height=h+'px';
+  const cv=document.createElement('canvas');w.appendChild(cv);host.appendChild(w);return cv;}
+function legend(host,items){const l=document.createElement('div');l.className='legend';
+  items.forEach(it=>l.insertAdjacentHTML('beforeend',`<span class="it"><span class="sw" style="background:${it.c}"></span>${it.t}</span>`));host.appendChild(l);}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+function pctLabelPlugin(){return{id:'pl',afterDatasetsDraw(c){const{ctx}=c;ctx.save();
+  ctx.font='600 11px '+cssv('--wb-font');ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+  c.data.datasets.forEach((ds,di)=>c.getDatasetMeta(di).data.forEach((el,i)=>{
+    const raw=ds.data[i];const v=Array.isArray(raw)?Math.abs(raw[1]-raw[0]):raw;
+    if(v>=8){const cx=(el.x+(el.base!==undefined?el.base:el.x))/2;ctx.fillText(Math.round(v)+'%',cx,el.y);}}));
+  ctx.restore();}};}
+
+/* SE whiskers + value labels for mean bars / lollipop (horizontal) */
+function meanLabelPlugin(lolli){return{id:'ml',afterDatasetsDraw(c){const{ctx}=c;const xs=c.scales.x;const se=c.$se||[],mn=c.$mean||[];
+  if(!mn.length)return;
+  ctx.save();c.getDatasetMeta(0).data.forEach((el,i)=>{
+    if(mn[i]===undefined)return;
+    if(lolli){ctx.fillStyle=PRIMARY();ctx.beginPath();ctx.arc(el.x,el.y,6,0,7);ctx.fill();}
+    const s=se[i]||0;if(s>0){const x1=xs.getPixelForValue(mn[i]-s),x2=xs.getPixelForValue(mn[i]+s);
+      ctx.strokeStyle=cssv('--wb-ink');ctx.lineWidth=1.5;ctx.beginPath();
+      ctx.moveTo(x1,el.y);ctx.lineTo(x2,el.y);ctx.moveTo(x1,el.y-5);ctx.lineTo(x1,el.y+5);ctx.moveTo(x2,el.y-5);ctx.lineTo(x2,el.y+5);ctx.stroke();}
+    ctx.fillStyle=cssv('--wb-ink');ctx.font='600 11.5px '+cssv('--wb-font');ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(`${mn[i].toFixed(2)} (${(se[i]||0).toFixed(2)})`, Math.max(el.x,xs.getPixelForValue(mn[i]+(se[i]||0)))+8, el.y);
+  });ctx.restore();}};}
+
+function centerLinePlugin(){return{id:'cl',beforeDatasetsDraw(c){const x=c.scales.x.getPixelForValue(0),a=c.chartArea;
+  const ctx=c.ctx;ctx.save();ctx.strokeStyle=cssv('--wb-muted');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,a.top);ctx.lineTo(x,a.bottom);ctx.stroke();ctx.restore();}};}
+
+/* ---------- renderers ---------- */
+function rStacked(host,labels,rows,sc,pal){
+  const h=clamp(60+labels.length*46,150,560),cv=box(host,h);
+  const ds=sc.map((lab,si)=>({label:lab,data:rows.map(r=>+r[si].toFixed(1)),backgroundColor:pal[si],borderWidth:0,
+    borderRadius:si===sc.length-1?{topRight:4,bottomRight:4}:0,maxBarThickness:40}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:ds},plugins:[pctLabelPlugin()],
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      scales:{x:{stacked:true,max:100,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>v+'%',color:cssv('--wb-muted'),font:{size:11}}},
+        y:{stacked:true,grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+function rDiverging(host,labels,rows,sc,pal){
+  const np=sc.length,mid=(np-1)/2;
+  const datapts=sc.map(()=>[]);let ext=0;
+  rows.forEach(r=>{let off=0;for(let j=0;j<np;j++){if(j<mid)off-=r[j];else if(j===mid)off-=r[j]/2;}
+    let cur=off;for(let j=0;j<np;j++){datapts[j].push([cur,cur+r[j]]);cur+=r[j];}ext=Math.max(ext,Math.abs(off),Math.abs(cur));});
+  const lim=Math.ceil(ext/10)*10||100;
+  const h=clamp(60+labels.length*46,150,560),cv=box(host,h);
+  const ds=sc.map((lab,si)=>({label:lab,data:datapts[si],backgroundColor:pal[si],borderWidth:0,maxBarThickness:40}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:ds},plugins:[pctLabelPlugin(),centerLinePlugin()],
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      scales:{x:{min:-lim,max:lim,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>Math.abs(v)+'%',color:cssv('--wb-muted'),font:{size:11}}},
+        y:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw[1]-c.raw[0]).toFixed(1)}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+function rGrouped(host,glabels,rows,sc,pal){
+  // x = response categories, datasets = subgroups
+  const h=clamp(300+0,300,420),cv=box(host,h);
+  const ds=glabels.map((g,gi)=>({label:g,data:rows[gi].map(p=>+p.toFixed(1)),backgroundColor:glabels.length>1?CAT[gi%CAT.length]:PRIMARY(),borderRadius:3,maxBarThickness:46}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels:sc,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      scales:{y:{beginAtZero:true,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>v+'%',color:cssv('--wb-muted')}},
+        x:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:11},maxRotation:30,minRotation:0}}},
+      plugins:{legend:{display:glabels.length>1,position:'bottom',labels:{boxWidth:13,font:{size:12}}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}}}});
+}
+function rDonut(host,sc,pcts,pal){
+  const cv=box(host,330);destroy();
+  chart=new Chart(cv,{type:'doughnut',data:{labels:sc,datasets:[{data:pcts.map(p=>+p.toFixed(1)),backgroundColor:pal,borderColor:'#fff',borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'56%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+function rMeanBars(host,labels,means,ses,np,lolli){
+  const h=clamp(60+labels.length*44,140,560),cv=box(host,h);
+  const ds={data:means.map(m=>+m.toFixed(3)),backgroundColor:lolli?cssv('--wb-line'):PRIMARY(),borderRadius:lolli?0:4,
+    maxBarThickness:lolli?4:34,minBarLength:2};
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:[ds]},plugins:[meanLabelPlugin(lolli)],
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},layout:{padding:{right:64}},
+      scales:{x:{min:1,max:np,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{stepSize:1,color:cssv('--wb-muted'),font:{size:11}}},
+        y:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
+      plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+  chart.$se=ses;chart.$mean=means;chart.update();
+}
+function rRadar(host,labels,means,np){
+  const cv=box(host,clamp(360,360,440));destroy();
+  chart=new Chart(cv,{type:'radar',data:{labels,datasets:[{data:means.map(m=>+m.toFixed(2)),
+    backgroundColor:'rgba(227,6,19,.15)',borderColor:PRIMARY(),pointBackgroundColor:PRIMARY(),pointBorderColor:'#fff',borderWidth:2,pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:1,max:np,ticks:{stepSize:1,backdropColor:'transparent',color:cssv('--wb-muted'),font:{size:10}},
+      grid:{color:cssv('--wb-line')},angleLines:{color:cssv('--wb-line')},pointLabels:{color:cssv('--wb-ink'),font:{size:12}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${T(I18N.ui.meanWord)}: ${c.raw}`}}}}});
+}
+
+/* ---------- stage ---------- */
+let lastTable=null;
+function buildStage(host,o){
+  host.innerHTML=`<h2>${o.title}</h2>${o.q?`<p class="qtext">«${o.q}»</p>`:''}<p class="meta">${o.meta||''}</p>`
+    +`<div id="cbox"></div><div class="actions"><button class="btn" id="dlp">${T(I18N.ui.dlPng)}</button><button class="btn ghost" id="dlc">${T(I18N.ui.dlCsv)}</button></div>`;
+  o.build(host.querySelector('#cbox'));
+  if(o.table){const d=document.createElement('details');d.className='tablewrap';d.innerHTML=`<summary>${T(I18N.ui.showTable)}</summary>`;
+    const tb=document.createElement('table');
+    tb.innerHTML=`<thead><tr>${o.table.head.map((h,i)=>`<th class="${i?'num':''}">${h}</th>`).join('')}</tr></thead><tbody>${o.table.rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i?'num':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    d.appendChild(tb);host.appendChild(d);lastTable={...o.table,name:o.title};}
+  host.querySelector('#dlp').onclick=()=>dlPng(o.title);
+  host.querySelector('#dlc').onclick=dlCsv;
+}
+function titleFor(code){const b=WB_T.blockOf[code];
+  if(SINGLE_BLOCKS.has(b)) return labOf(code);
+  const p=prefixOf(code);return p?`${p}: ${labOf(code)}`:labOf(code);}
+function subtitleFor(code){const b=WB_T.blockOf[code];
+  if(SINGLE_BLOCKS.has(b)) return stemOf(code);
+  return `${stemOf(code)} — ${labOf(code)}`;}
+
+/* ---------- main render ---------- */
+function render(){
+  const host=document.getElementById('stage-e'),code=cust.var,np=WB.meta[code].np,sc=scaleLabels(code);
+  const gs=groups(), pal=divPalette(np), split=isSplit(code);
+  const stats=gs.map(g=>statsFor(code,g.idxs,cust.weight));
+  const glabels=gs.map((g,i)=>`${g.label} (n=${stats[i].n})`);
+  const totN=stats.reduce((a,s)=>a+s.n,0);
+  const meta=`${T(I18N.ui.basis)}: n = ${cust.group?totN:stats[0].n}${split?' · '+T(I18N.ui.split):''} · ${cust.weight?T(I18N.ui.weighted):T(I18N.ui.unweighted)}`
+    +(cust.filter?` · ${T(I18N.ui.filter)}: ${I18N.demo[cust.filter.split(':')[0]].cats[LANG][+cust.filter.split(':')[1]-1]}`:'');
+  const base={title:titleFor(code),q:subtitleFor(code),meta};
+
+  if(cust.display==='dist'){
+    const rows=stats.map(s=>s.p);
+    if(cust.dtype==='donut' && !cust.group){
+      buildStage(host,{...base,build:b=>rDonut(b,sc,rows[0],pal),
+        table:{head:[T(I18N.ui.cat),T(I18N.ui.share)],rows:sc.map((l,i)=>[l,rows[0][i].toFixed(1)+'%'])}});
+    }else if(cust.dtype==='grouped'){
+      buildStage(host,{...base,build:b=>rGrouped(b,glabels,rows,sc,pal),
+        table:{head:[T(I18N.ui.cat),...glabels],rows:sc.map((l,i)=>[l,...rows.map(r=>r[i].toFixed(1)+'%')])}});
+    }else if(cust.dtype==='diverging'){
+      buildStage(host,{...base,build:b=>rDiverging(b,glabels,rows,sc,pal),
+        table:{head:[T(I18N.ui.cat),...sc],rows:glabels.map((l,i)=>[l,...rows[i].map(p=>p.toFixed(1)+'%')])}});
+    }else{
+      buildStage(host,{...base,build:b=>rStacked(b,glabels,rows,sc,pal),
+        table:{head:[T(I18N.ui.cat),...sc,'n'],rows:glabels.map((l,i)=>[gs[i].label,...rows[i].map(p=>p.toFixed(1)+'%'),stats[i].n])}});
+    }
+  }else{
+    const means=stats.map(s=>s.mean),ses=stats.map(s=>s.se);
+    const tbl={head:[cust.group?I18N.demo[cust.group].lab[LANG]:T(I18N.ui.cat),T(I18N.ui.meanWord),T(I18N.ui.se),'n'],
+      rows:glabels.map((l,i)=>[gs[i].label,means[i].toFixed(2),ses[i].toFixed(2),stats[i].n])};
+    if(cust.mtype==='radar'){
+      buildStage(host,{...base,build:b=>rRadar(b,glabels,means,np),table:tbl});
+    }else{
+      buildStage(host,{...base,build:b=>rMeanBars(b,glabels,means,ses,np,cust.mtype==='lollipop'),table:tbl});
+    }
+  }
+}
+
+/* ---------- download ---------- */
+function dlPng(name){if(!chart)return;const src=chart.canvas,pad=24,head=46;
+  const out=document.createElement('canvas');out.width=src.width+pad*2;out.height=src.height+pad*2+head;
+  const x=out.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,out.width,out.height);
+  x.fillStyle=PRIMARY();x.font='700 17px '+cssv('--wb-font');x.fillText(name.slice(0,80),pad,30);
+  x.fillStyle=cssv('--wb-muted');x.font='12px '+cssv('--wb-font');x.fillText('Wissenschaftsbarometer Schweiz 2025',pad,30+head-22);
+  x.drawImage(src,pad,pad+head);const a=document.createElement('a');a.download=slug(name)+'.png';a.href=out.toDataURL('image/png');a.click();}
+function dlCsv(){if(!lastTable)return;const lines=[lastTable.head.join(';'),...lastTable.rows.map(r=>r.map(c=>String(c).replace('%','')).join(';'))];
+  const b=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.download=slug(lastTable.name)+'.csv';a.href=URL.createObjectURL(b);a.click();}
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9äöü]+/g,'-').replace(/(^-|-$)/g,'').slice(0,48)||'wb2025';
+
+/* ---------- UI ---------- */
+function fill(){
+  document.getElementById('hdr-title').textContent=T(I18N.ui.title);
+  document.getElementById('hdr-sub').textContent=T(I18N.ui.sub);
+  document.getElementById('tab-e').textContent=T(I18N.ui.tabE);
+  document.getElementById('tab-i').textContent=T(I18N.ui.tabI);
+  document.getElementById('e-lede').textContent=T(I18N.ui.eLede);
+  document.getElementById('i-lede').textContent=T(I18N.ui.iLede);
+  document.getElementById('i-foot').textContent=T(I18N.ui.iFoot);
+  document.getElementById('foot').innerHTML=T(I18N.ui.foot);
+  document.getElementById('lb-var').textContent=T(I18N.ui.var);
+  document.getElementById('lb-group').textContent=T(I18N.ui.group);
+  document.getElementById('lb-filter').textContent=T(I18N.ui.filter);
+  document.getElementById('lb-display').textContent=T(I18N.ui.display);
+  document.getElementById('lb-chart').textContent=T(I18N.ui.chart);
+  document.getElementById('lb-weight').textContent=T(I18N.ui.weight);
+  document.getElementById('i-body').innerHTML=I18N.method.rows.map(r=>`<tr><th>${T(r[1])}</th><td>${T(r[2])}</td></tr>`).join('');
+}
+function buildControls(){
+  const vsel=document.getElementById('c-var');vsel.innerHTML='';
+  const bySec={};Object.keys(WB.meta).forEach(c=>{(bySec[WB.meta[c].sec]=bySec[WB.meta[c].sec]||[]).push(c);});
+  SECORDER.forEach(sec=>{if(!bySec[sec])return;const og=document.createElement('optgroup');og.label=T(I18N.sec[sec]);
+    bySec[sec].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=labOf(c);if(c===cust.var)o.selected=true;og.appendChild(o);});vsel.appendChild(og);});
+  const gsel=document.getElementById('c-group');gsel.innerHTML=`<option value="">${T(I18N.ui.none)}</option>`;
+  Object.keys(I18N.demo).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=I18N.demo[k].lab[LANG];if(k===cust.group)o.selected=true;gsel.appendChild(o);});
+  const fsel=document.getElementById('c-filter');fsel.innerHTML=`<option value="">${T(I18N.ui.noFilter)}</option>`;
+  Object.keys(I18N.demo).forEach(k=>{const og=document.createElement('optgroup');og.label=I18N.demo[k].lab[LANG];
+    I18N.demo[k].cats[LANG].forEach((c,i)=>{const o=document.createElement('option');o.value=k+':'+(i+1);o.textContent=c;if(cust.filter===k+':'+(i+1))o.selected=true;og.appendChild(o);});fsel.appendChild(og);});
+  document.getElementById('c-display').innerHTML=
+    `<button data-d="dist" aria-pressed="${cust.display==='dist'}">${T(I18N.ui.dist)}</button><button data-d="mean" aria-pressed="${cust.display==='mean'}">${T(I18N.ui.mean)}</button>`;
+  buildChartTypes();
+  document.getElementById('c-weight').innerHTML=
+    `<button data-w="1" aria-pressed="${cust.weight}">${T(I18N.ui.wOn)}</button><button data-w="0" aria-pressed="${!cust.weight}">${T(I18N.ui.wOff)}</button>`;
+  vsel.onchange=e=>{cust.var=e.target.value;render();};
+  gsel.onchange=e=>{cust.group=e.target.value;buildChartTypes();render();};
+  fsel.onchange=e=>{cust.filter=e.target.value;render();};
+  document.querySelectorAll('#c-display button').forEach(b=>b.onclick=()=>{cust.display=b.dataset.d;buildControls();render();});
+  document.querySelectorAll('#c-weight button').forEach(b=>b.onclick=()=>{cust.weight=b.dataset.w==='1';buildControls();render();});
+}
+function buildChartTypes(){
+  const host=document.getElementById('c-chart');let opts;
+  if(cust.display==='dist'){opts=[['stacked',I18N.ui.t_stacked],['grouped',I18N.ui.t_grouped],['diverging',I18N.ui.t_diverging]];
+    if(!cust.group)opts.push(['donut',I18N.ui.t_donut]);
+    if(!opts.some(o=>o[0]===cust.dtype))cust.dtype='stacked';
+  }else{opts=[['bars',I18N.ui.t_bars],['lollipop',I18N.ui.t_lollipop],['radar',I18N.ui.t_radar]];
+    if(!opts.some(o=>o[0]===cust.mtype))cust.mtype='bars';}
+  const sel=cust.display==='dist'?cust.dtype:cust.mtype;
+  host.innerHTML=opts.map(o=>`<button data-t="${o[0]}" aria-pressed="${o[0]===sel}">${T(o[1])}</button>`).join('');
+  host.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(cust.display==='dist')cust.dtype=b.dataset.t;else cust.mtype=b.dataset.t;buildChartTypes();render();});
+}
+function setTab(t){TAB=t;
+  document.getElementById('panel-e').classList.toggle('hidden',t!=='e');
+  document.getElementById('panel-i').classList.toggle('hidden',t!=='i');
+  document.getElementById('tab-e').setAttribute('aria-selected',t==='e');
+  document.getElementById('tab-i').setAttribute('aria-selected',t==='i');
+  if(t==='e')render();
+}
+function setLang(l){LANG=l;document.querySelectorAll('#langs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===l));fill();buildControls();setTab(TAB);}
+document.querySelectorAll('#langs button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+document.getElementById('tab-e').onclick=()=>setTab('e');
+document.getElementById('tab-i').onclick=()=>setTab('i');
+fill();buildControls();setTab('e');
+</script>
