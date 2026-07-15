@@ -1,0 +1,915 @@
+<!--
+  WISSENSCHAFTSBAROMETER SCHWEIZ — DATA DASHBOARD (waves 2016-2025 + trend)
+  Self-contained: data + translations + logo embedded. Languages DE/FR/IT/EN.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wissenschaftsbarometer Schweiz — Data Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --wb-primary:#ED1C24; --wb-primary-dark:#C41019;
+  --wb-ink:#1A1A1A; --wb-muted:#5F6368;
+  --wb-bg:#FFFFFF; --wb-surface:#F6F4F2; --wb-surface-2:#EFEBE7; --wb-line:#E3DED9;
+  --wb-font:"Univers","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --wb-head:"Bebas Neue",Impact,"Arial Narrow",var(--wb-font);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wb-bg);color:var(--wb-ink);font-family:var(--wb-font);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+a{color:var(--wb-primary)}
+header.top{background:#fff;border-bottom:3px solid var(--wb-primary);padding:16px 0}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
+.brand img{height:54px;width:auto;display:block}
+.brand .tt h1{margin:0;font-family:var(--wb-head);font-weight:400;font-size:23px;letter-spacing:.02em;line-height:1.05}
+.brand .tt p{margin:2px 0 0;font-size:13px;color:var(--wb-muted)}
+.langs{display:inline-flex;border:1px solid var(--wb-line);border-radius:9px;overflow:hidden}
+.langs button{appearance:none;border:0;background:none;color:var(--wb-muted);font:inherit;font-weight:600;font-size:13px;padding:8px 12px;cursor:pointer}
+.langs button[aria-pressed="true"]{background:var(--wb-primary);color:#fff}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--wb-line);margin-top:20px;flex-wrap:wrap}
+.tab{appearance:none;border:0;background:none;font:inherit;font-weight:600;color:var(--wb-muted);padding:13px 16px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;font-size:15px}
+.tab:hover{color:var(--wb-ink)}
+.tab[aria-selected="true"]{color:var(--wb-primary);border-bottom-color:var(--wb-primary)}
+.panel{padding:24px 0 64px}
+.lede{color:var(--wb-muted);margin:0 0 20px;font-size:14.5px}
+.controls{display:flex;flex-direction:column;gap:13px;background:var(--wb-surface);border:1px solid var(--wb-line);border-radius:14px;padding:17px;margin-bottom:22px}
+.crow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.crow.head{grid-template-columns:minmax(150px,220px) minmax(0,1fr)}
+.crow.head.noyear{grid-template-columns:1fr}
+.crow.one{grid-template-columns:1fr}
+.crow.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.crow,.crow.four,.crow.head{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0;position:relative}
+.field>label{font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--wb-muted);text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.field>label .mini{appearance:none;border:0;background:none;color:var(--wb-primary);font:inherit;font-size:11px;font-weight:700;cursor:pointer;text-transform:none;padding:0}
+.cmp-row{display:flex;gap:8px;align-items:center;position:relative}
+.cmp-row .dd-host{flex:1 1 auto;min-width:0;position:relative}
+.cmp-x{appearance:none;border:1px solid var(--wb-line);background:#fff;color:var(--wb-muted);font:inherit;font-weight:700;border-radius:9px;width:34px;height:38px;cursor:pointer;flex:0 0 auto}
+.cmp-x:hover{color:var(--wb-primary);border-color:var(--wb-primary)}
+.cmp-add{appearance:none;border:1px dashed var(--wb-line);background:#fff;color:var(--wb-primary);font:inherit;font-size:13px;font-weight:600;border-radius:9px;padding:8px 12px;cursor:pointer;align-self:flex-start}
+.cmp-add:hover{border-color:var(--wb-primary)}
+.cmp-add:disabled{opacity:.4;cursor:default}
+.field select{font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--wb-line);border-radius:9px;background:#fff;color:var(--wb-ink);width:100%}
+.field select:disabled{opacity:.45}
+.field select:focus-visible,.dd-btn:focus-visible{outline:2px solid var(--wb-primary);outline-offset:1px}
+.seg{display:flex;width:100%;border:1px solid var(--wb-line);border-radius:9px;overflow:hidden;background:#fff}
+.seg button{appearance:none;border:0;background:none;font:inherit;font-size:13px;padding:9px 4px;cursor:pointer;color:var(--wb-muted);flex:1 1 0;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.seg button[aria-pressed="true"]{background:var(--wb-primary);color:#fff;font-weight:600}
+.dd-btn{display:flex;align-items:center;gap:8px;width:100%;font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--wb-line);border-radius:9px;background:#fff;color:var(--wb-ink);cursor:pointer;text-align:left}
+.dd-btn:disabled{opacity:.45;cursor:default}
+.dd-btn .dd-label{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd-btn .dd-car{flex:0 0 auto;color:var(--wb-muted);font-size:11px}
+.dd-panel{position:absolute;left:0;right:0;top:calc(100% + 5px);z-index:60;background:#fff;border:1px solid var(--wb-line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.14);max-height:56vh;overflow:auto;padding:6px;display:none}
+.dd-panel.open{display:block}
+.dd-sticky{position:sticky;top:-6px;background:#fff;z-index:2;padding:8px 9px;border-bottom:1px solid var(--wb-line);margin:-6px -6px 4px;display:flex;justify-content:flex-end}
+.dd-sticky button{appearance:none;border:0;background:none;color:var(--wb-primary);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;padding:0}
+.dd-grp{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--wb-muted);padding:9px 8px 4px}
+.dd-opt{padding:7px 9px;border-radius:7px;font-size:13.5px;font-weight:400;color:var(--wb-ink);cursor:pointer;line-height:1.35;display:flex;gap:8px;align-items:flex-start;text-transform:none;letter-spacing:normal;overflow-wrap:anywhere}
+.dd-opt:hover{background:var(--wb-surface)}
+.dd-opt[aria-selected="true"]{background:var(--wb-primary);color:#fff;font-weight:600}
+.dd-opt input{margin-top:3px;accent-color:var(--wb-primary);flex:0 0 auto}
+.dd-note{font-size:11.5px;color:var(--wb-muted);padding:6px 9px}
+.stage{border:1px solid var(--wb-line);border-radius:14px;padding:22px;background:#fff}
+.stage h2{margin:0 0 6px;font-family:var(--wb-head);font-weight:400;text-transform:uppercase;letter-spacing:.035em;font-size:26px;line-height:1.06}
+.stage .qtext{color:var(--wb-muted);font-size:13.5px;margin:0 0 4px}
+.stage .meta{color:var(--wb-muted);font-size:12.5px;margin:0 0 14px}
+.chart-wrap{position:relative;width:100%}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin:14px 0 2px}
+.legend .it{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--wb-ink)}
+.legend .sw{width:13px;height:13px;border-radius:3px;flex:0 0 auto}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.btn{appearance:none;font:inherit;font-weight:600;font-size:14px;border-radius:9px;padding:10px 15px;cursor:pointer;border:1px solid var(--wb-primary);background:var(--wb-primary);color:#fff}
+.btn:hover{background:var(--wb-primary-dark);border-color:var(--wb-primary-dark)}
+.btn.ghost{background:#fff;color:var(--wb-primary)}
+.btn.ghost:hover{background:var(--wb-surface)}
+.copied{font-size:12.5px;color:var(--wb-muted)}
+details.tablewrap{margin-top:18px;border-top:1px solid var(--wb-line);padding-top:6px}
+details.tablewrap summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--wb-primary);padding:8px 0;list-style:none}
+details.tablewrap summary::-webkit-details-marker{display:none}
+details.tablewrap summary::before{content:"▸ "}
+details[open].tablewrap summary::before{content:"▾ "}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--wb-line)}
+th{color:var(--wb-muted);font-weight:600;background:var(--wb-surface)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+footer.foot{border-top:1px solid var(--wb-line);padding:22px 0 50px;color:var(--wb-muted);font-size:12.5px}
+footer.foot b{color:var(--wb-ink)}
+.hidden{display:none!important}
+.kv th{width:16%}
+@media(max-width:620px){.brand .tt h1{font-size:19px}.brand img{height:44px}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">
+    <a href="https://wissenschaftsbarometer.ch/" target="_blank" rel="noopener"><img src="__WB_LOGO__" alt="Wissenschaftsbarometer Schweiz"></a>
+    <div class="tt"><h1 id="hdr-title"></h1><p id="hdr-sub"></p></div>
+  </div>
+  <div class="langs" id="langs" role="group" aria-label="Language">
+    <button data-l="de" aria-pressed="true">DE</button>
+    <button data-l="fr" aria-pressed="false">FR</button>
+    <button data-l="it" aria-pressed="false">IT</button>
+    <button data-l="en" aria-pressed="false">EN</button>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-q" aria-selected="true">·</button>
+    <button class="tab" role="tab" id="tab-t" aria-selected="false">·</button>
+    <button class="tab" role="tab" id="tab-i" aria-selected="false">·</button>
+  </div>
+
+  <section class="panel" id="panel-e" role="tabpanel">
+    <p class="lede" id="e-lede"></p>
+    <div class="controls" id="controls">
+      <div class="crow head" id="row-head">
+        <div class="field" id="f-year"><label id="lb-year"></label><select id="c-year"></select></div>
+        <div class="field"><label id="lb-sec"></label><select id="c-sec"></select></div>
+      </div>
+      <div class="crow one">
+        <div class="field"><label id="lb-var"><span id="lb-var-t"></span><button class="mini" id="cmp-toggle"></button></label>
+          <div class="cmp-row"><div class="dd-host" id="dd-host-0"></div></div>
+          <div id="cmp-rows" style="display:flex;flex-direction:column;gap:8px"></div>
+          <button class="cmp-add hidden" id="cmp-add"></button>
+        </div>
+      </div>
+      <div class="crow four">
+        <div class="field"><label id="lb-group"></label><select id="c-group"></select></div>
+        <div class="field"><label id="lb-filter"></label>
+          <button class="dd-btn" id="fl-btn" aria-haspopup="true" aria-expanded="false"><span class="dd-label" id="fl-label"></span><span class="dd-car">▾</span></button>
+          <div class="dd-panel" id="fl-panel"></div>
+        </div>
+        <div class="field"><label id="lb-display"></label><div class="seg" id="c-display"></div></div>
+        <div class="field"><label id="lb-chart"></label><div class="seg" id="c-chart"></div></div>
+      </div>
+    </div>
+    <div class="stage" id="stage-e"></div>
+  </section>
+
+  <section class="panel hidden" id="panel-i" role="tabpanel">
+    <p class="lede" id="i-lede"></p>
+    <table class="kv"><thead id="i-head"></thead><tbody id="i-body"></tbody></table>
+    <p class="lede" id="i-notes" style="margin-top:22px;max-width:none;clear:both"></p>
+  </section>
+</div>
+<footer class="foot"><div class="wrap" id="foot"></div></footer>
+
+<script>/* __WB_TRANSLATIONS__ */</script>
+<script>/* __WB_TRANSLATIONS3__ */</script>
+<script>
+const WB = __WB_DATA__;
+const YEARS={1:2016,2:2019,3:2020,4:2022,5:2025};
+const YCODE={2016:'1',2019:'2',2020:'3',2022:'4',2025:'5'};
+const MODEBREAK=new Set([2020,2025]);
+
+const I18N={
+ ui:{
+  title:{de:"Wissenschaftsbarometer Schweiz: Data Dashboard",fr:"Baromètre Scientifique Suisse: Data Dashboard",it:"Barometro Scientifico Svizzero: Data Dashboard",en:"Science Barometer Switzerland: Data Dashboard"},
+  sub:{de:"Wissenschaftseinstellungen und -kommunikation in der Schweiz",fr:"Attitudes envers la science et communication scientifique en Suisse",it:"Atteggiamenti verso la scienza e comunicazione scientifica in Svizzera",en:"Science attitudes and science communication in Switzerland"},
+  tabQ:{de:"Analyse: Querschnittbefragungen",fr:"Analyse : enquêtes transversales",it:"Analisi: indagini trasversali",en:"Analysis: cross-sectional surveys"},
+  tabT:{de:"Analyse: Trend (2016–2025)",fr:"Analyse : tendance (2016–2025)",it:"Analisi: tendenza (2016–2025)",en:"Analysis: trend (2016–2025)"},
+  tabI:{de:"Über die Daten",fr:"À propos des données",it:"Informazioni sui dati",en:"About the data"},
+  eLedeQ:{de:"Wählen Sie eine Erhebung (2016–2025), dann ein Thema und eine Frage. Alle Analysen sind gewichtet und repräsentativ für die Schweizer Bevölkerung.",
+         fr:"Choisissez une enquête (2016–2025), puis un thème et une question. Toutes les analyses sont pondérées et représentatives de la population suisse.",
+         it:"Scelga un'indagine (2016–2025), poi un tema e una domanda. Tutte le analisi sono ponderate e rappresentative della popolazione svizzera.",
+         en:"Choose a survey wave (2016–2025), then a topic and a question. All analyses are weighted and representative of the Swiss population."},
+  eLedeT:{de:"Die Trendanalyse umfasst alle Fragen, die in mindestens zwei Erhebungen gestellt wurden. Alle Analysen sind gewichtet und repräsentativ für die Schweizer Bevölkerung.",
+         fr:"L'analyse de tendance couvre toutes les questions posées dans au moins deux enquêtes. Toutes les analyses sont pondérées et représentatives de la population suisse.",
+         it:"L'analisi di tendenza copre tutte le domande poste in almeno due indagini. Tutte le analisi sono ponderate e rappresentative della popolazione svizzera.",
+         en:"The trend analysis covers all questions asked in at least two survey waves. All analyses are weighted and representative of the Swiss population."},
+  year:{de:"Erhebung",fr:"Enquête",it:"Indagine",en:"Survey"},
+  covidEd:{de:"2020 (COVID-19-Edition)",fr:"2020 (édition COVID-19)",it:"2020 (edizione COVID-19)",en:"2020 (COVID-19 edition)"},
+  sec:{de:"Thema",fr:"Thème",it:"Tema",en:"Topic"},
+  var:{de:"Frage",fr:"Question",it:"Domanda",en:"Question"},
+  varN:{de:"Frage",fr:"Question",it:"Domanda",en:"Question"},
+  cmpOn:{de:"+ Vergleichen",fr:"+ Comparer",it:"+ Confrontare",en:"+ Compare"},
+  cmpOff:{de:"✕ Vergleich beenden",fr:"✕ Terminer la comparaison",it:"✕ Terminare il confronto",en:"✕ End comparison"},
+  cmpAdd:{de:"+ Frage hinzufügen",fr:"+ Ajouter une question",it:"+ Aggiungere una domanda",en:"+ Add question"},
+  cmpNote:{de:"Vergleich innerhalb derselben Fragebatterie, max. {n} Fragen.",fr:"Comparaison au sein de la même batterie, max. {n} questions.",it:"Confronto all'interno della stessa batteria, max {n} domande.",en:"Comparison within the same battery, max. {n} questions."},
+  group:{de:"Aufschlüsseln nach",fr:"Ventiler par",it:"Suddividere per",en:"Break down by"},
+  filter:{de:"Filter",fr:"Filtre",it:"Filtro",en:"Filter"},
+  noFilter:{de:"— kein Filter —",fr:"— aucun filtre —",it:"— nessun filtro —",en:"— no filter —"},
+  nFilter:{de:"Filter aktiv",fr:"filtres actifs",it:"filtri attivi",en:"filters active"},
+  clear:{de:"Zurücksetzen",fr:"Réinitialiser",it:"Azzerare",en:"Reset"},
+  display:{de:"Darstellung",fr:"Affichage",it:"Visualizzazione",en:"Display"},
+  chart:{de:"Diagrammtyp",fr:"Type de graphique",it:"Tipo di grafico",en:"Chart type"},
+  yaxis:{de:"Y-Achse",fr:"Axe Y",it:"Asse Y",en:"Y axis"},
+  yfull:{de:"Volle Skala",fr:"Échelle complète",it:"Scala completa",en:"Full scale"},
+  yzoom:{de:"Ausschnitt",fr:"Zoom",it:"Dettaglio",en:"Zoomed"},
+  none:{de:"— gesamte Bevölkerung —",fr:"— population entière —",it:"— intera popolazione —",en:"— whole population —"},
+  dist:{de:"Verteilung",fr:"Distribution",it:"Distribuzione",en:"Distribution"},
+  mean:{de:"Mittelwerte",fr:"Moyennes",it:"Medie",en:"Means"},
+  top2:{de:"Anteil (Top-2)",fr:"Part (top 2)",it:"Quota (top 2)",en:"Share (top 2)"},
+  t_stacked:{de:"Gestapelt",fr:"Empilé",it:"Impilato",en:"Stacked"},
+  t_grouped:{de:"Gruppiert",fr:"Groupé",it:"Raggruppato",en:"Grouped"},
+  t_diverging:{de:"Divergierend",fr:"Divergent",it:"Divergente",en:"Diverging"},
+  t_donut:{de:"Donut",fr:"Anneau",it:"Anello",en:"Donut"},
+  t_bars:{de:"Balken",fr:"Barres",it:"Barre",en:"Bars"},
+  t_radar:{de:"Radar",fr:"Radar",it:"Radar",en:"Radar"},
+  t_lollipop:{de:"Lollipop",fr:"Sucette",it:"Lollipop",en:"Lollipop"},
+  t_line:{de:"Linien",fr:"Lignes",it:"Linee",en:"Lines"},
+  dlPng:{de:"Diagramm als PNG",fr:"Graphique en PNG",it:"Grafico in PNG",en:"Chart as PNG"},
+  dlCsv:{de:"Daten als CSV",fr:"Données en CSV",it:"Dati in CSV",en:"Data as CSV"},
+  share:{de:"Link kopieren",fr:"Copier le lien",it:"Copiare il link",en:"Copy link"},
+  shared:{de:"Link kopiert!",fr:"Lien copié !",it:"Link copiato!",en:"Link copied!"},
+  total:{de:"Gesamt",fr:"Total",it:"Totale",en:"Total"},
+  basis:{de:"Basis",fr:"Base",it:"Base",en:"Base"},
+  weighted:{de:"gewichtet",fr:"pondéré",it:"ponderato",en:"weighted"},
+  split:{de:"Split-Ballot (halbe Stichprobe)",fr:"split-ballot (demi-échantillon)",it:"split-ballot (metà campione)",en:"split-ballot (half sample)"},
+  meanWord:{de:"Mittelwert",fr:"Moyenne",it:"Media",en:"Mean"},
+  se:{de:"Standardfehler",fr:"Erreur standard",it:"Errore standard",en:"Standard error"},
+  sd:{de:"Standardabweichung",fr:"Écart-type",it:"Deviazione standard",en:"Standard deviation"},
+  showTable:{de:"Datentabelle anzeigen",fr:"Afficher le tableau",it:"Mostra tabella",en:"Show data table"},
+  cat:{de:"Kategorie",fr:"Catégorie",it:"Categoria",en:"Category"},
+  yearCol:{de:"Jahr",fr:"Année",it:"Anno",en:"Year"},
+  shareCol:{de:"Anteil",fr:"Part",it:"Quota",en:"Share"},
+  errNote:{de:"Fehlerbalken: ±1 Standardfehler des Mittelwerts. Hinweis: Das ist kein 95%-Konfidenzintervall – dieses wäre etwa doppelt so breit (±1,96 Standardfehler).",
+           fr:"Barres d'erreur : ±1 erreur standard de la moyenne. Remarque : il ne s'agit pas d'un intervalle de confiance à 95 % – celui-ci serait environ deux fois plus large (±1,96 erreur standard).",
+           it:"Barre d'errore: ±1 errore standard della media. Nota: non si tratta di un intervallo di confidenza al 95% – questo sarebbe circa due volte più ampio (±1,96 errori standard).",
+           en:"Error bars: ±1 standard error of the mean. Note: this is not a 95% confidence interval – that would be about twice as wide (±1.96 standard errors)."},
+  top2Note:{de:"Anteil der Antworten in den beiden höchsten Kategorien.",fr:"Part des réponses dans les deux catégories les plus élevées.",it:"Quota di risposte nelle due categorie più alte.",en:"Share of answers in the two highest categories."},
+  modeNote:{de:"Gestrichelte Verbindungen: Methodenwechsel – 2020 Online-Befragung (COVID-19-Edition), 2025 Online- und Papier-Befragung (WAPI/PAPI); übrige Wellen telefonisch. Niveauunterschiede zu 2020 und 2025 sind mit Vorsicht zu interpretieren.",
+            fr:"Liaisons en pointillé : changement de méthode – 2020 enquête en ligne (édition COVID-19), 2025 enquête en ligne et papier (WAPI/PAPI) ; autres vagues par téléphone. Les écarts de niveau avec 2020 et 2025 sont à interpréter avec prudence.",
+            it:"Collegamenti tratteggiati: cambio di metodo – 2020 indagine online (edizione COVID-19), 2025 indagine online e cartacea (WAPI/PAPI); le altre ondate per telefono. Le differenze di livello con il 2020 e il 2025 vanno interpretate con cautela.",
+            en:"Dashed connectors: change of survey mode – 2020 online survey (COVID-19 edition), 2025 online and paper survey (WAPI/PAPI); other waves by telephone. Level differences to 2020 and 2025 should be interpreted with caution."},
+  foot:{de:'<b>Wissenschaftsbarometer Schweiz</b>, Universität Zürich (IKMZ) · gewichtete Daten 2016–2025 · Quelle: «WissensCHaftsbarometer Schweiz» · <a href="https://wissenschaftsbarometer.ch/" target="_blank" rel="noopener">wissenschaftsbarometer.ch</a> · <a href="https://www.linkedin.com/company/wissbaro-ch/" target="_blank" rel="noopener">LinkedIn</a>',
+        fr:'<b>Baromètre Scientifique Suisse</b>, Université de Zurich (IKMZ) · données pondérées 2016–2025 · Source : « Baromètre Scientifique Suisse » · <a href="https://wissenschaftsbarometer.ch/" target="_blank" rel="noopener">wissenschaftsbarometer.ch</a> · <a href="https://www.linkedin.com/company/wissbaro-ch/" target="_blank" rel="noopener">LinkedIn</a>',
+        it:'<b>Barometro Scientifico Svizzero</b>, Università di Zurigo (IKMZ) · dati ponderati 2016–2025 · Fonte: «Barometro Scientifico Svizzero» · <a href="https://wissenschaftsbarometer.ch/" target="_blank" rel="noopener">wissenschaftsbarometer.ch</a> · <a href="https://www.linkedin.com/company/wissbaro-ch/" target="_blank" rel="noopener">LinkedIn</a>',
+        en:'<b>Science Barometer Switzerland</b>, University of Zurich (IKMZ) · weighted data 2016–2025 · Source: “Science Barometer Switzerland” · <a href="https://wissenschaftsbarometer.ch/" target="_blank" rel="noopener">wissenschaftsbarometer.ch</a> · <a href="https://www.linkedin.com/company/wissbaro-ch/" target="_blank" rel="noopener">LinkedIn</a>'},
+  iLede:{de:"Das Wissenschaftsbarometer Schweiz untersucht seit 2016, wie die Schweizer Bevölkerung zu Wissenschaft und Forschung steht und wie sie sich darüber informiert. Dieses Dashboard umfasst die fünf Erhebungen 2016–2025.",
+         fr:"Depuis 2016, le Baromètre Scientifique Suisse étudie le rapport de la population suisse à la science et la manière dont elle s'informe. Ce tableau de bord couvre les cinq enquêtes 2016–2025.",
+         it:"Dal 2016 il Barometro Scientifico Svizzero studia il rapporto della popolazione svizzera con la scienza e come si informa. Questo cruscotto copre le cinque indagini 2016–2025.",
+         en:"Since 2016 the Science Barometer Switzerland has studied how the Swiss public relates to science and how it stays informed. This dashboard covers the five survey waves 2016–2025."},
+  iNotes:{de:'Hinweise: «Weiss nicht»-Antworten sind jeweils aus der Basis ausgeschlossen. Die Gewichtung stellt Repräsentativität her. Wegen des Methodenwechsels (2020 online, 2025 online/Papier, sonst telefonisch) sind Trendvergleiche mit 2020 und 2025 mit Vorsicht zu interpretieren; im Trenddiagramm sind diese Verbindungen gestrichelt. Die «Publika der Wissenschaftskommunikation» (nur 2025) beruhen auf einer Clusteranalyse (siehe <a href="https://journals.sagepub.com/doi/10.1177/0963662517752886" target="_blank" rel="noopener">Schäfer et al., 2018</a>).',
+          fr:'Remarques : les réponses « je ne sais pas » sont exclues de la base. La pondération assure la représentativité. En raison du changement de méthode (2020 en ligne, 2025 en ligne/papier, sinon par téléphone), les comparaisons avec 2020 et 2025 sont à interpréter avec prudence ; ces liaisons sont en pointillé dans le graphique de tendance. Les « publics de la communication scientifique » (2025 uniquement) reposent sur une analyse typologique (voir <a href="https://journals.sagepub.com/doi/10.1177/0963662517752886" target="_blank" rel="noopener">Schäfer et al., 2018</a>).',
+          it:'Note: le risposte «non so» sono escluse dalla base. La ponderazione garantisce la rappresentatività. A causa del cambio di metodo (2020 online, 2025 online/cartaceo, altrimenti per telefono), i confronti con il 2020 e il 2025 vanno interpretati con cautela; nel grafico di tendenza questi collegamenti sono tratteggiati. I «pubblici della comunicazione scientifica» (solo 2025) si basano su un\'analisi tipologica (vedi <a href="https://journals.sagepub.com/doi/10.1177/0963662517752886" target="_blank" rel="noopener">Schäfer et al., 2018</a>).',
+          en:'Notes: “don\'t know” answers are excluded from each base. Weighting ensures representativeness. Because of the mode change (2020 online, 2025 online/paper, otherwise telephone), comparisons with 2020 and 2025 should be interpreted with caution; these connectors are dashed in the trend chart. The “audiences of science communication” (2025 only) are based on a cluster analysis (see <a href="https://journals.sagepub.com/doi/10.1177/0963662517752886" target="_blank" rel="noopener">Schäfer et al., 2018</a>).'},
+ },
+ method:{
+  head:{de:["Erhebung","Methode","Feldzeit","Stichprobe","Durchführung"],fr:["Enquête","Méthode","Période","Échantillon","Réalisation"],it:["Indagine","Metodo","Periodo","Campione","Realizzazione"],en:["Survey","Method","Field period","Sample","Conducted by"]},
+  rows:[
+   {y:{de:"2016",fr:"2016",it:"2016",en:"2016"},m:{de:"Telefonbefragung (CATI), Random-Quota",fr:"Enquête téléphonique (CATI), random-quota",it:"Indagine telefonica (CATI), random-quota",en:"Telephone survey (CATI), random quota"},f:{de:"8.–30. Juni 2016",fr:"8–30 juin 2016",it:"8–30 giugno 2016",en:"8–30 June 2016"},n:{de:"n = 1'051, ab 15 Jahren",fr:"n = 1'051, dès 15 ans",it:"n = 1'051, da 15 anni",en:"n = 1,051, aged 15+"},o:{de:"DemoSCOPE",fr:"DemoSCOPE",it:"DemoSCOPE",en:"DemoSCOPE"}},
+   {y:{de:"2019",fr:"2019",it:"2019",en:"2019"},m:{de:"Telefonbefragung (CATI), Dual-Frame Festnetz/Mobile",fr:"Enquête téléphonique (CATI), dual frame fixe/mobile",it:"Indagine telefonica (CATI), dual frame fisso/mobile",en:"Telephone survey (CATI), dual frame landline/mobile"},f:{de:"17. Juni – 20. Juli 2019",fr:"17 juin – 20 juillet 2019",it:"17 giugno – 20 luglio 2019",en:"17 June – 20 July 2019"},n:{de:"n = 1'050, ab 15 Jahren",fr:"n = 1'050, dès 15 ans",it:"n = 1'050, da 15 anni",en:"n = 1,050, aged 15+"},o:{de:"DemoSCOPE",fr:"DemoSCOPE",it:"DemoSCOPE",en:"DemoSCOPE"}},
+   {y:{de:"2020 (COVID-19-Edition)",fr:"2020 (édition COVID-19)",it:"2020 (edizione COVID-19)",en:"2020 (COVID-19 edition)"},m:{de:"Online-Befragung (CAWI), Online-Panels; Sonderbefragung, finanziert von den Akademien der Wissenschaften Schweiz",fr:"Enquête en ligne (CAWI), panels en ligne ; enquête spéciale financée par les Académies suisses des sciences",it:"Indagine online (CAWI), panel online; indagine speciale finanziata dalle Accademie svizzere delle scienze",en:"Online survey (CAWI), online panels; special edition funded by the Swiss Academies of Arts and Sciences"},f:{de:"4.–19. November 2020",fr:"4–19 novembre 2020",it:"4–19 novembre 2020",en:"4–19 November 2020"},n:{de:"n = 1'072, ab 15 Jahren",fr:"n = 1'072, dès 15 ans",it:"n = 1'072, da 15 anni",en:"n = 1,072, aged 15+"},o:{de:"DemoSCOPE / Dynata",fr:"DemoSCOPE / Dynata",it:"DemoSCOPE / Dynata",en:"DemoSCOPE / Dynata"}},
+   {y:{de:"2022",fr:"2022",it:"2022",en:"2022"},m:{de:"Telefonbefragung (CATI), Dual-Frame Festnetz/Mobile",fr:"Enquête téléphonique (CATI), dual frame fixe/mobile",it:"Indagine telefonica (CATI), dual frame fisso/mobile",en:"Telephone survey (CATI), dual frame landline/mobile"},f:{de:"30. August – 25. September 2022",fr:"30 août – 25 septembre 2022",it:"30 agosto – 25 settembre 2022",en:"30 August – 25 September 2022"},n:{de:"n = 1'052, ab 15 Jahren",fr:"n = 1'052, dès 15 ans",it:"n = 1'052, da 15 anni",en:"n = 1,052, aged 15+"},o:{de:"DemoSCOPE",fr:"DemoSCOPE",it:"DemoSCOPE",en:"DemoSCOPE"}},
+   {y:{de:"2025",fr:"2025",it:"2025",en:"2025"},m:{de:"Online- und Papier-Befragung (WAPI/PAPI), SRPH-Stichprobenrahmen des BFS; Module «KI» und «Kritik & Angriffe» im Split-Ballot",fr:"Enquête en ligne et papier (WAPI/PAPI), base SRPH de l'OFS ; modules « IA » et « critiques & attaques » en split-ballot",it:"Indagine online e cartacea (WAPI/PAPI), quadro SRPH dell'UST; moduli «IA» e «critiche & attacchi» in split-ballot",en:"Online and paper survey (WAPI/PAPI), FSO SRPH sampling frame; “AI” and “criticism & attacks” modules split-ballot"},f:{de:"13. Juni – 10. Juli 2025",fr:"13 juin – 10 juillet 2025",it:"13 giugno – 10 luglio 2025",en:"13 June – 10 July 2025"},n:{de:"n = 1'548, ab 16 Jahren",fr:"n = 1'548, dès 16 ans",it:"n = 1'548, da 16 anni",en:"n = 1,548, aged 16+"},o:{de:"gfs.bern",fr:"gfs.bern",it:"gfs.bern",en:"gfs.bern"}},
+  ]},
+ scales:{
+  agree5:{de:["stimme überhaupt nicht zu","2","3","4","stimme voll und ganz zu"],fr:["pas du tout d'accord","2","3","4","tout à fait d'accord"],it:["per niente d'accordo","2","3","4","del tutto d'accordo"],en:["strongly disagree","2","3","4","strongly agree"]},
+  freq5:{de:["nie","2","3","4","sehr häufig"],fr:["jamais","2","3","4","très souvent"],it:["mai","2","3","4","molto spesso"],en:["never","2","3","4","very often"]},
+  trust5:{de:["sehr gering","2","3","4","sehr hoch"],fr:["très faible","2","3","4","très élevé"],it:["molto basso","2","3","4","molto alto"],en:["very low","2","3","4","very high"]},
+  accept5:{de:["nie in Ordnung","2","3","4","unter Umständen in Ordnung"],fr:["inacceptable","2","3","4","acceptable parfois"],it:["mai giusto","2","3","4","giusto in certi casi"],en:["never acceptable","2","3","4","acceptable sometimes"]},
+  intensity5:{de:["überhaupt nicht","2","3","4","sehr stark"],fr:["pas du tout","2","3","4","énormément"],it:["per niente","2","3","4","moltissimo"],en:["not at all","2","3","4","very strongly"]},
+  satis5:{de:["überhaupt nicht zufrieden","2","3","4","sehr zufrieden"],fr:["pas du tout satisfait","2","3","4","très satisfait"],it:["per niente soddisfatto","2","3","4","molto soddisfatto"],en:["not at all satisfied","2","3","4","very satisfied"]},
+  attention5:{de:["überhaupt nicht aufmerksam","2","3","4","sehr aufmerksam"],fr:["pas du tout attentivement","2","3","4","très attentivement"],it:["per niente attentamente","2","3","4","molto attentamente"],en:["not at all attentively","2","3","4","very attentively"]},
+  importance5:{de:["überhaupt nicht wichtig","2","3","4","sehr wichtig"],fr:["pas du tout important","2","3","4","très important"],it:["per niente importante","2","3","4","molto importante"],en:["not at all important","2","3","4","very important"]},
+  meti5:{de:["1","2","3","4","5"],fr:["1","2","3","4","5"],it:["1","2","3","4","5"],en:["1","2","3","4","5"]},
+  know4:{de:["sicher falsch","eher falsch","eher richtig","sicher richtig"],fr:["certainement faux","plutôt faux","plutôt vrai","certainement vrai"],it:["sicuramente falso","probabilmente falso","probabilmente vero","sicuramente vero"],en:["surely false","probably false","probably true","surely true"]},
+  lr7:{de:["sehr links","2","3","Mitte","5","6","sehr rechts"],fr:["très à gauche","2","3","centre","5","6","très à droite"],it:["molto a sinistra","2","3","centro","5","6","molto a destra"],en:["far left","2","3","centre","5","6","far right"]}
+ },
+ demo:{
+  lang:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Sprachregion",fr:"Région linguistique",it:"Regione linguistica",en:"Language region"},cats:{de:["Deutschschweiz","Westschweiz","ital. Schweiz"],fr:["Suisse alémanique","Suisse romande","Suisse italienne"],it:["Svizzera tedesca","Svizzera romanda","Svizzera italiana"],en:["German-sp.","French-sp.","Italian-sp."]}},
+  gender:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Geschlecht",fr:"Sexe",it:"Sesso",en:"Gender"},cats:{de:["Männlich","Weiblich","Divers"],fr:["Homme","Femme","Autre"],it:["Uomo","Donna","Altro"],en:["Male","Female","Other"]}},
+  age:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Altersgruppe",fr:"Tranche d'âge",it:"Fascia d'età",en:"Age group"},cats:{de:["15–34","35–54","55+"],fr:["15–34","35–54","55+"],it:["15–34","35–54","55+"],en:["15–34","35–54","55+"]}},
+  edu:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Bildung",fr:"Formation",it:"Formazione",en:"Education"},cats:{de:["Obligatorische Schule","Sekundarstufe II","Tertiärstufe"],fr:["Scolarité obligatoire","Secondaire II","Tertiaire"],it:["Scuola dell'obbligo","Secondario II","Terziario"],en:["Compulsory school","Upper secondary","Tertiary"]}},
+  pol:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Politische Haltung",fr:"Orientation politique",it:"Orientamento politico",en:"Political leaning"},cats:{de:["links","Mitte","rechts"],fr:["gauche","centre","droite"],it:["sinistra","centro","destra"],en:["left","centre","right"]}},
+  party:{yrs:[2016,2022,2025],lab:{de:"Partei",fr:"Parti",it:"Partito",en:"Party"},cats:{de:["SVP","SP","FDP","Mitte","GRÜNE","GLP","andere","keine"],fr:["UDC","PS","PLR","Le Centre","Verts","PVL","autre","aucun"],it:["UDC","PS","PLR","Il Centro","Verdi","PVL","altro","nessuno"],en:["SVP","SP","FDP","Centre","Greens","GLP","other","none"]}},
+  urban:{yrs:[2019,2020,2022],lab:{de:"Siedlungsart",fr:"Type de commune",it:"Tipo di comune",en:"Settlement type"},cats:{de:["städtisch","intermediär","ländlich"],fr:["urbain","intermédiaire","rural"],it:["urbano","intermedio","rurale"],en:["urban","intermediate","rural"]}},
+  segment:{yrs:[2025],lab:{de:"Publika der Wissenschaftskommunikation",fr:"Publics de la communication scientifique",it:"Pubblici della comunicazione scientifica",en:"Audiences of science communication"},cats:{de:["Passive Unterstützer","Sciencephiles","Kritisch Interessierte","Skeptische"],fr:["Soutiens passifs","Scientophiles","Intéressés critiques","Sceptiques"],it:["Sostenitori passivi","Scientofili","Interessati critici","Scettici"],en:["Passive supporters","Science-philes","Critically interested","Skeptics"]}}
+ }
+};
+const SECORDER=['interest','themes','trust','attitudes','sources','activities','literacy','ai','criticism','populism','covid','desinfo','pseudo','motive','verdrossen'];
+const SINGLE_BLOCKS=new Set(['interest','media_satisf','ai_use','ai_trust','sci_pol','media_att','cov_att']);
+
+/* ---------- lookups across WB_T (2025) and WB_T3 (extension) ---------- */
+const cssv=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const PRIMARY=()=>cssv('--wb-primary');
+const CAT=['#ED1C24','#1A1A1A','#2E6E8E','#E0A92B','#5B7FB0','#3F8C6E','#9AA0A6','#8E5A7D'];
+function hex2rgb(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function rgb2hex(a){return '#'+a.map(x=>Math.round(x).toString(16).padStart(2,'0')).join('');}
+const DIV_ANCHORS=['#FCD2C1','#F8AA8F','#F48466','#F15A40','#ED1C24'].map(hex2rgb);
+function divPalette(n){const out=[];for(let i=0;i<n;i++){const t=n===1?0.5:i/(n-1);const x=t*(DIV_ANCHORS.length-1);
+  const lo=Math.floor(x),hi=Math.min(lo+1,DIV_ANCHORS.length-1),f=x-lo;
+  out.push(rgb2hex(DIV_ANCHORS[lo].map((c,k)=>c+(DIV_ANCHORS[hi][k]-c)*f)));}return out;}
+function lum(hex){const a=hex2rgb(hex);return (0.299*a[0]+0.587*a[1]+0.114*a[2])/255;}
+function textOn(hex){return lum(hex)>0.62?'#1A1A1A':'#fff';}
+
+let LANG='de', TAB='q', chart=null;
+let cust={y:'2025', sec:'trust', var:'vert_wiss', cmp:[], group:'', filt:{}, disp:'dist', dtype:'stacked', mtype:'bars', yzoom:false};
+const isTrend=()=>TAB==='t';
+const T=o=>o&&o[LANG]!==undefined&&o[LANG]!==null?o[LANG]:(o&&o.de)||'';
+const stripDE=s=>String(s||'').replace(/^\[\d{4}\]\s*/,'');
+const aliasOf=c=>WB_T3.alias[c];
+function labOf(c){const t3=WB_T3.lab[c];if(t3&&t3[LANG])return t3[LANG];
+  const a=aliasOf(c);if(a&&WB_T.lab[a]&&WB_T.lab[a][LANG])return WB_T.lab[a][LANG];
+  if(LANG==='de'){if(t3&&t3.de)return t3.de;if(a&&WB_T.lab[a]&&WB_T.lab[a].de)return WB_T.lab[a].de;
+    let d=stripDE(WB.meta[c].de);const i=d.lastIndexOf(' - ');return i>0?d.slice(i+3):d;}
+  return stripDE(WB.meta[c].de);}
+function blockOfC(c){const a=aliasOf(c);return WB_T3.blockOf[c]||(a&&WB_T.blockOf[a])||null;}
+function stemOf(c){const b=blockOfC(c);if(!b)return '';
+  return T(WB_T3.stem[b]||WB_T.stem[b]||{});}
+function prefixOf(c){const b=blockOfC(c);if(!b)return '';
+  return T(WB_T3.prefix[b]||WB_T.prefix[b]||{});}
+function fullTextOf(c){const a=aliasOf(c);const ft=WB_T3.fullText[c]||(a&&WB_T3.fullText[a]);return ft?T(ft):null;}
+function scaleLabels(c){const m=WB.meta[c],np=m.np;
+  const anch=WB_T3.anchors[c];
+  if(anch){const p=anch[LANG]||anch.de;const out=['1 – '+p[0],'2','3','4','5 – '+p[1]];return out;}
+  const base=I18N.scales[m.scale][LANG].slice();
+  if(np===5){base[0]='1 – '+base[0];base[4]='5 – '+base[4];}
+  return base;}
+function top2Labels(c){const sc=scaleLabels(c);return sc.slice(-2).map(s=>s.replace(/^\d+ – /,''));}
+
+/* ---------- data helpers ---------- */
+const val=(s,i)=>s.charCodeAt(i)-48;
+function yearsOf(c){return WB.meta[c].waves;}
+function isTrendable(c){return yearsOf(c).length>1;}
+function filtPass(i){
+  for(const dim in cust.filt){const sel=cust.filt[dim];if(!sel||!sel.length)continue;
+    const v=val(WB.demo[dim],i);if(!sel.includes(v))return false;}
+  return true;}
+function idxYear(year){const wc=YCODE[year],w=WB.wave,out=[];
+  for(let i=0;i<WB.n;i++)if(w[i]===wc&&filtPass(i))out.push(i);return out;}
+function statsFor(code,idxs){
+  const s=WB.vars[code],np=WB.meta[code].np,W=WB.weights;
+  let counts=new Array(np).fill(0),wsum=0,sw2=0,msum=0,n=0;
+  for(const i of idxs){const v=val(s,i);if(v<1||v>np)continue;
+    const w=W[i];counts[v-1]+=w;wsum+=w;sw2+=w*w;msum+=w*v;n++;}
+  const p=wsum?counts.map(c=>c/wsum*100):counts;
+  const mean=wsum?msum/wsum:0;
+  let vw=0;for(const i of idxs){const v=val(s,i);if(v<1||v>np)continue;vw+=W[i]*(v-mean)*(v-mean);}
+  vw=wsum?vw/wsum:0;
+  const neff=sw2?(wsum*wsum)/sw2:0;
+  return {p,n,mean,sd:Math.sqrt(vw),se:neff>1?Math.sqrt(vw/neff):0,
+    top2:p.length>1?p[np-2]+p[np-1]:0};
+}
+function groupsFor(year){
+  const idxs=idxYear(year);
+  if(!cust.group)return [{label:T(I18N.ui.total),idxs}];
+  const d=I18N.demo[cust.group];if(!d)return [{label:T(I18N.ui.total),idxs}];
+  const cats=d.cats[LANG],arr=WB.demo[cust.group],out=[];
+  for(let c=1;c<=cats.length;c++){const ii=idxs.filter(i=>val(arr,i)===c);if(ii.length)out.push({label:cats[c-1],idxs:ii});}
+  return out;}
+function isSplit(code,year){if(year!==2025)return false;
+  const idx=idxYear(2025);let c=0;const s=WB.vars[code],np=WB.meta[code].np;
+  for(const i of idx){const v=val(s,i);if(v>=1&&v<=np)c++;}
+  return c<idx.length*0.75;}
+
+/* ---------- chart plumbing ---------- */
+function destroy(){if(chart){chart.destroy();chart=null;}}
+function box(host,h){const w=document.createElement('div');w.className='chart-wrap';w.style.height=h+'px';
+  const cv=document.createElement('canvas');w.appendChild(cv);host.appendChild(w);return cv;}
+function legend(host,items){const l=document.createElement('div');l.className='legend';
+  items.forEach(it=>l.insertAdjacentHTML('beforeend',`<span class="it"><span class="sw" style="background:${it.c}"></span>${it.t}</span>`));host.appendChild(l);}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const PCTMIN=5;
+function pctLabelPluginH(){return{id:'plh',afterDatasetsDraw(c){const{ctx}=c;ctx.save();
+  ctx.font='600 11px '+cssv('--wb-font');ctx.textAlign='center';ctx.textBaseline='middle';
+  c.data.datasets.forEach((ds,di)=>{const col=typeof ds.backgroundColor==='string'?ds.backgroundColor:'#888';ctx.fillStyle=textOn(col);
+    c.getDatasetMeta(di).data.forEach((el,i)=>{const raw=ds.data[i];const v=Array.isArray(raw)?Math.abs(raw[1]-raw[0]):raw;
+      if(v>=PCTMIN){const cx=(el.x+(el.base!==undefined?el.base:el.x))/2;ctx.fillText(Math.round(v)+'%',cx,el.y);}});});
+  ctx.restore();}};}
+function pctLabelPluginV(){return{id:'plv',afterDatasetsDraw(c){const{ctx}=c;ctx.save();
+  ctx.font='600 11px '+cssv('--wb-font');ctx.textAlign='center';
+  c.data.datasets.forEach((ds,di)=>{const stacked=c.options.scales.y.stacked;
+    c.getDatasetMeta(di).data.forEach((el,i)=>{const raw=ds.data[i];const v=Array.isArray(raw)?Math.abs(raw[1]-raw[0]):raw;
+      if(v<PCTMIN)return;
+      if(stacked){const col=typeof ds.backgroundColor==='string'?ds.backgroundColor:'#888';
+        ctx.fillStyle=textOn(col);ctx.textBaseline='middle';
+        const cy=(el.y+(el.base!==undefined?el.base:el.y))/2;ctx.fillText(Math.round(v)+'%',el.x,cy);}
+      else{ctx.fillStyle=cssv('--wb-ink');ctx.textBaseline='bottom';ctx.fillText(Math.round(v)+'%',el.x,el.y-3);}});});
+  ctx.restore();}};}
+function donutLabelPlugin(){return{id:'dl',afterDatasetsDraw(c){const{ctx}=c;ctx.save();
+  ctx.font='600 11.5px '+cssv('--wb-font');ctx.textAlign='center';ctx.textBaseline='middle';
+  const meta=c.getDatasetMeta(0),data=c.data.datasets[0].data,cols=c.data.datasets[0].backgroundColor;
+  meta.data.forEach((arc,i)=>{const v=data[i];if(v<PCTMIN)return;
+    const a=(arc.startAngle+arc.endAngle)/2,r=(arc.innerRadius+arc.outerRadius)/2;
+    ctx.fillStyle=textOn(cols[i]);ctx.fillText(Math.round(v)+'%',arc.x+Math.cos(a)*r,arc.y+Math.sin(a)*r);});
+  ctx.restore();}};}
+function meanLabelPlugin(lolli){return{id:'ml',afterDatasetsDraw(c){const{ctx}=c;const xs=c.scales.x;const se=c.$se||[],mn=c.$mean||[];
+  if(!mn.length)return;
+  ctx.save();c.getDatasetMeta(0).data.forEach((el,i)=>{
+    if(mn[i]===undefined)return;
+    if(lolli){ctx.fillStyle=PRIMARY();ctx.beginPath();ctx.arc(el.x,el.y,6,0,7);ctx.fill();}
+    const s=se[i]||0;if(s>0){const x1=xs.getPixelForValue(mn[i]-s),x2=xs.getPixelForValue(mn[i]+s);
+      ctx.strokeStyle=cssv('--wb-ink');ctx.lineWidth=1.5;ctx.beginPath();
+      ctx.moveTo(x1,el.y);ctx.lineTo(x2,el.y);ctx.moveTo(x1,el.y-5);ctx.lineTo(x1,el.y+5);ctx.moveTo(x2,el.y-5);ctx.lineTo(x2,el.y+5);ctx.stroke();}
+    ctx.fillStyle=cssv('--wb-ink');ctx.font='600 11.5px '+cssv('--wb-font');ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(`${mn[i].toFixed(2)} (${(se[i]||0).toFixed(2)})`,Math.max(el.x,xs.getPixelForValue(mn[i]+(se[i]||0)))+8,el.y);
+  });ctx.restore();}};}
+function lineSEPlugin(){return{id:'lse',afterDatasetsDraw(c){const{ctx}=c;const series=c.$series;if(!series)return;
+  ctx.save();ctx.lineWidth=1.4;
+  series.forEach((sr,di)=>{const meta=c.getDatasetMeta(di);
+    meta.data.forEach((pt,i)=>{const se=sr.se[i];if(se==null||!isFinite(pt.y))return;
+      const y1=c.scales.y.getPixelForValue(sr.mean[i]-se),y2=c.scales.y.getPixelForValue(sr.mean[i]+se);
+      ctx.strokeStyle=meta.dataset.options.borderColor||sr.color;ctx.beginPath();
+      ctx.moveTo(pt.x,y1);ctx.lineTo(pt.x,y2);ctx.moveTo(pt.x-4,y1);ctx.lineTo(pt.x+4,y1);ctx.moveTo(pt.x-4,y2);ctx.lineTo(pt.x+4,y2);ctx.stroke();});});
+  ctx.restore();}};}
+function centerLinePlugin(){return{id:'cl',beforeDatasetsDraw(c){const x=c.scales.x.getPixelForValue(0),a=c.chartArea;
+  const ctx=c.ctx;ctx.save();ctx.strokeStyle=cssv('--wb-muted');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,a.top);ctx.lineTo(x,a.bottom);ctx.stroke();ctx.restore();}};}
+
+/* ---------- single-year renderers ---------- */
+function rStacked(host,labels,rows,sc,pal){
+  const h=clamp(60+labels.length*46,150,620),cv=box(host,h);
+  const ds=sc.map((lab,si)=>({label:lab,data:rows.map(r=>+r[si].toFixed(1)),backgroundColor:pal[si],borderWidth:0,
+    borderRadius:si===sc.length-1?{topRight:4,bottomRight:4}:0,maxBarThickness:40}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:ds},plugins:[pctLabelPluginH()],
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      scales:{x:{stacked:true,max:100,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>v+'%',color:cssv('--wb-muted'),font:{size:11}}},
+        y:{stacked:true,grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+function rDiverging(host,labels,rows,sc,pal){
+  const np=sc.length,mid=(np-1)/2;
+  const datapts=sc.map(()=>[]);let ext=0;
+  rows.forEach(r=>{let off=0;for(let j=0;j<np;j++){if(j<mid)off-=r[j];else if(j===mid)off-=r[j]/2;}
+    let cur=off;for(let j=0;j<np;j++){datapts[j].push([cur,cur+r[j]]);cur+=r[j];}ext=Math.max(ext,Math.abs(off),Math.abs(cur));});
+  const lim=Math.ceil(ext/10)*10||100;
+  const h=clamp(60+labels.length*46,150,620),cv=box(host,h);
+  const ds=sc.map((lab,si)=>({label:lab,data:datapts[si],backgroundColor:pal[si],borderWidth:0,maxBarThickness:40}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:ds},plugins:[pctLabelPluginH(),centerLinePlugin()],
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      scales:{x:{min:-lim,max:lim,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>Math.abs(v)+'%',color:cssv('--wb-muted'),font:{size:11}}},
+        y:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw[1]-c.raw[0]).toFixed(1)}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+function rGrouped(host,glabels,rows,sc,pal){
+  const cv=box(host,360);
+  const ds=glabels.map((g,gi)=>({label:g,data:rows[gi].map(p=>+p.toFixed(1)),backgroundColor:glabels.length>1?CAT[gi%CAT.length]:PRIMARY(),borderRadius:3,maxBarThickness:46}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels:sc,datasets:ds},plugins:[pctLabelPluginV()],
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},layout:{padding:{top:16}},
+      scales:{y:{beginAtZero:true,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>v+'%',color:cssv('--wb-muted')}},
+        x:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:11},maxRotation:30,minRotation:0}}},
+      plugins:{legend:{display:glabels.length>1,position:'bottom',labels:{boxWidth:13,font:{size:12}}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}}}});
+}
+function rDonut(host,sc,pcts,pal){
+  const cv=box(host,330);destroy();
+  chart=new Chart(cv,{type:'doughnut',data:{labels:sc,datasets:[{data:pcts.map(p=>+p.toFixed(1)),backgroundColor:pal,borderColor:'#fff',borderWidth:3}]},
+    plugins:[donutLabelPlugin()],
+    options:{responsive:true,maintainAspectRatio:false,cutout:'56%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+function rMeanBars(host,labels,means,ses,np,lolli){
+  const h=clamp(60+labels.length*44,140,620),cv=box(host,h);
+  const ds={data:means.map(m=>+m.toFixed(3)),backgroundColor:lolli?cssv('--wb-line'):PRIMARY(),borderRadius:lolli?0:4,
+    maxBarThickness:lolli?4:34,minBarLength:2};
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:[ds]},plugins:[meanLabelPlugin(lolli)],
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},layout:{padding:{right:70}},
+      scales:{x:{min:1,max:np,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{stepSize:1,color:cssv('--wb-muted'),font:{size:11}}},
+        y:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
+      plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+  chart.$se=ses;chart.$mean=means;chart.update();
+}
+function rRadar(host,labels,means,np){
+  const cv=box(host,400);destroy();
+  chart=new Chart(cv,{type:'radar',data:{labels,datasets:[{data:means.map(m=>+m.toFixed(2)),
+    backgroundColor:'rgba(237,28,36,.15)',borderColor:PRIMARY(),pointBackgroundColor:PRIMARY(),pointBorderColor:'#fff',borderWidth:2,pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:1,max:np,ticks:{stepSize:1,backdropColor:'transparent',color:cssv('--wb-muted'),font:{size:10}},
+      grid:{color:cssv('--wb-line')},angleLines:{color:cssv('--wb-line')},pointLabels:{color:cssv('--wb-ink'),font:{size:12}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${T(I18N.ui.meanWord)}: ${c.raw}`}}}}});
+}
+
+/* ---------- trend renderers ---------- */
+function dashSeg(yearsArr){return ctx=>{
+  const y0=yearsArr[ctx.p0DataIndex],y1=yearsArr[ctx.p1DataIndex];
+  return (MODEBREAK.has(y0)||MODEBREAK.has(y1))?[6,5]:undefined;};}
+function pointLabelPlugin(fmt){return{id:'ptl',afterDatasetsDraw(c){const{ctx}=c;ctx.save();
+  ctx.font='600 11px '+cssv('--wb-font');ctx.textAlign='center';ctx.textBaseline='bottom';
+  c.data.datasets.forEach((ds,di)=>{const meta=c.getDatasetMeta(di);
+    ctx.fillStyle=ds.borderColor||cssv('--wb-ink');
+    meta.data.forEach((pt,i)=>{const v=ds.data[i];if(v==null||!isFinite(pt.y))return;
+      ctx.fillText(fmt(v),pt.x,pt.y-8);});});
+  ctx.restore();}};}
+function rTrendLine(host,seriesDefs,years,yCfg,showSE,fmt){
+  const cv=box(host,380);
+  const ds=seriesDefs.map((s,i)=>({label:s.label,data:s.data.map(v=>v==null?null:+v),
+    borderColor:s.color||CAT[i%CAT.length],backgroundColor:s.color||CAT[i%CAT.length],
+    pointRadius:4,pointHoverRadius:5,borderWidth:2.2,spanGaps:true,
+    segment:{borderDash:dashSeg(years)}}));
+  destroy();chart=new Chart(cv,{type:'line',data:{labels:years.map(String),datasets:ds},
+    plugins:[...(showSE?[lineSEPlugin()]:[]),pointLabelPlugin(fmt)],
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},layout:{padding:{top:20,right:14}},
+      scales:{y:{...yCfg,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{...(yCfg.ticks||{}),color:cssv('--wb-muted'),font:{size:11}}},
+        x:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12}}}},
+      plugins:{legend:{display:seriesDefs.length>1,position:'bottom',labels:{boxWidth:13,font:{size:12}}},
+        tooltip:{callbacks:{label:c=>`${c.dataset.label?c.dataset.label+': ':''}${fmt(c.raw)}`}}}}});
+  if(showSE)chart.$series=seriesDefs.map((s,i)=>({se:s.se,mean:s.data,color:s.color||CAT[i%CAT.length]}));
+  chart.update();
+}
+function rTrendDist(host,years,rowsPerYear,sc,pal){
+  const cv=box(host,380);
+  const ds=sc.map((lab,si)=>({label:lab,data:years.map((y,yi)=>rowsPerYear[yi]?+rowsPerYear[yi][si].toFixed(1):null),
+    backgroundColor:pal[si],borderWidth:0,maxBarThickness:74}));
+  destroy();chart=new Chart(cv,{type:'bar',data:{labels:years.map(String),datasets:ds},plugins:[pctLabelPluginV()],
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},
+      scales:{y:{stacked:true,max:100,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>v+'%',color:cssv('--wb-muted'),font:{size:11}}},
+        x:{stacked:true,grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}%`}}}}});
+  legend(host,sc.map((t,i)=>({t,c:pal[i]})));
+}
+
+/* ---------- stage ---------- */
+let lastTable=null;
+function buildStage(host,o){
+  host.innerHTML=`<h2>${o.title}</h2>${o.q?`<p class="qtext">«${o.q}»</p>`:''}<p class="meta">${o.meta||''}</p>`
+    +`<div id="cbox"></div>${o.note?`<p class="meta" style="margin:8px 0 0">${o.note}</p>`:''}`
+    +`<div class="actions"><button class="btn" id="dlp">${T(I18N.ui.dlPng)}</button><button class="btn ghost" id="dlc">${T(I18N.ui.dlCsv)}</button><button class="btn ghost" id="shr">${T(I18N.ui.share)}</button><span class="copied" id="shr-ok"></span></div>`;
+  o.build(host.querySelector('#cbox'));
+  if(o.table){const d=document.createElement('details');d.className='tablewrap';d.innerHTML=`<summary>${T(I18N.ui.showTable)}</summary>`;
+    const tb=document.createElement('table');
+    tb.innerHTML=`<thead><tr>${o.table.head.map((h,i)=>`<th class="${i?'num':''}">${h}</th>`).join('')}</tr></thead><tbody>${o.table.rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i?'num':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    d.appendChild(tb);host.appendChild(d);lastTable={...o.table,name:o.title};}
+  host.querySelector('#dlp').onclick=()=>dlPng(o.title);
+  host.querySelector('#dlc').onclick=dlCsv;
+  host.querySelector('#shr').onclick=()=>{const ok=host.querySelector('#shr-ok');
+    const url=location.href;
+    (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ok.textContent=T(I18N.ui.shared);setTimeout(()=>ok.textContent='',2200);})
+    .catch(()=>{window.prompt('URL',url);});};
+}
+function titleFor(code){const b=blockOfC(code);
+  if(SINGLE_BLOCKS.has(b))return labOf(code);
+  const p=prefixOf(code);return p?`${p}: ${labOf(code)}`:labOf(code);}
+function subtitleFor(code){const b=blockOfC(code);
+  const item=fullTextOf(code)||labOf(code);
+  if(SINGLE_BLOCKS.has(b))return stemOf(code);
+  const st=stemOf(code);return st?`${st} — ${item}`:item;}
+function metaLine(nTxt,split,extra){
+  let s=`${T(I18N.ui.basis)}: ${nTxt} · ${T(I18N.ui.weighted)}`;
+  if(split)s+=' · '+T(I18N.ui.split);
+  const fdims=Object.keys(cust.filt).filter(d=>cust.filt[d]&&cust.filt[d].length);
+  if(fdims.length){s+=' · '+T(I18N.ui.filter)+': '+fdims.map(d=>cust.filt[d].map(v=>I18N.demo[d].cats[LANG][v-1]).join('/')).join(', ');}
+  if(extra)s+=' · '+extra;
+  return s;}
+
+/* ---------- render ---------- */
+function activeCodes(){return (cust.cmp.length?cust.cmp:[cust.var]);}
+function render(){
+  syncHash();
+  const host=document.getElementById('stage-e');
+  if(isTrend())renderTrend(host);else renderYear(host,+cust.y);
+}
+function renderYear(host,year){
+  const codes=activeCodes(), code=codes[0], m=WB.meta[code], np=m.np, sc=scaleLabels(code), pal=divPalette(np);
+  const split=codes.some(c=>isSplit(c,year));
+  if(codes.length>1){ /* compare mode: items are the rows */
+    const idxs=idxYear(year);
+    const stats=codes.map(c=>statsFor(c,idxs));
+    const labels=codes.map((c,i)=>`${labOf(c)} (n = ${stats[i].n})`);
+    const base={title:`${prefixOf(code)||labOf(code)}`,q:stemOf(code),meta:metaLine(`${year===2020?T(I18N.ui.covidEd):year}, n = ${stats.length?Math.max(...stats.map(s=>s.n)):0}`,split)};
+    if(cust.disp==='dist'){
+      const rows=stats.map(s=>s.p);
+      const tbl={head:[T(I18N.ui.var),...sc,T(I18N.ui.meanWord),T(I18N.ui.sd),'n'],
+        rows:codes.map((c,i)=>[labOf(c),...rows[i].map(p=>p.toFixed(1)+'%'),stats[i].mean.toFixed(2),stats[i].sd.toFixed(2),stats[i].n])};
+      if(cust.dtype==='diverging')buildStage(host,{...base,build:b=>rDiverging(b,labels,rows,sc,pal),table:tbl});
+      else buildStage(host,{...base,build:b=>rStacked(b,labels,rows,sc,pal),table:tbl});
+    }else{
+      const means=stats.map(s=>s.mean),ses=stats.map(s=>s.se);
+      const tbl={head:[T(I18N.ui.var),T(I18N.ui.meanWord),T(I18N.ui.se),T(I18N.ui.sd),'n'],
+        rows:codes.map((c,i)=>[labOf(c),means[i].toFixed(2),ses[i].toFixed(2),stats[i].sd.toFixed(2),stats[i].n])};
+      if(cust.mtype==='radar'&&codes.length>=3)buildStage(host,{...base,build:b=>rRadar(b,codes.map(labOf),means,np),table:tbl});
+      else buildStage(host,{...base,note:T(I18N.ui.errNote),build:b=>rMeanBars(b,labels,means,ses,np,cust.mtype==='lollipop'),table:tbl});
+    }
+    return;
+  }
+  const gs=groupsFor(year);
+  const stats=gs.map(g=>statsFor(code,g.idxs));
+  const glabels=gs.map((g,i)=>`${g.label} (n = ${stats[i].n})`);
+  const totN=cust.group?stats.reduce((a,s)=>a+s.n,0):stats[0].n;
+  const base={title:titleFor(code),q:subtitleFor(code),meta:metaLine(`${year===2020?T(I18N.ui.covidEd):year}, n = ${totN}`,split)};
+  if(cust.disp==='dist'){
+    const rows=stats.map(s=>s.p);
+    const tbl={head:[T(I18N.ui.cat),...sc,T(I18N.ui.meanWord),T(I18N.ui.sd),'n'],
+      rows:glabels.map((l,i)=>[gs[i].label,...rows[i].map(p=>p.toFixed(1)+'%'),stats[i].mean.toFixed(2),stats[i].sd.toFixed(2),stats[i].n])};
+    if(cust.dtype==='donut'&&!cust.group)buildStage(host,{...base,build:b=>rDonut(b,sc,rows[0],pal),table:tbl});
+    else if(cust.dtype==='grouped')buildStage(host,{...base,build:b=>rGrouped(b,glabels,rows,sc,pal),table:tbl});
+    else if(cust.dtype==='diverging')buildStage(host,{...base,build:b=>rDiverging(b,glabels,rows,sc,pal),table:tbl});
+    else buildStage(host,{...base,build:b=>rStacked(b,glabels,rows,sc,pal),table:tbl});
+  }else{
+    const means=stats.map(s=>s.mean),ses=stats.map(s=>s.se);
+    const tbl={head:[cust.group?I18N.demo[cust.group].lab[LANG]:T(I18N.ui.cat),T(I18N.ui.meanWord),T(I18N.ui.se),T(I18N.ui.sd),'n'],
+      rows:glabels.map((l,i)=>[gs[i].label,means[i].toFixed(2),ses[i].toFixed(2),stats[i].sd.toFixed(2),stats[i].n])};
+    if(cust.mtype==='radar')buildStage(host,{...base,build:b=>rRadar(b,glabels,means,np),table:tbl});
+    else buildStage(host,{...base,note:T(I18N.ui.errNote),build:b=>rMeanBars(b,glabels,means,ses,np,cust.mtype==='lollipop'),table:tbl});
+  }
+}
+function renderTrend(host){
+  const codes=activeCodes(), code=codes[0], m=WB.meta[code], np=m.np, sc=scaleLabels(code), pal=divPalette(np);
+  const years=[...new Set(codes.flatMap(yearsOf))].sort();
+  const perYear=y=>idxYear(y);
+  const splitNote=codes.some(c=>yearsOf(c).includes(2025)&&isSplit(c,2025))?T(I18N.ui.split):'';
+  const compare=codes.length>1, grouped=!compare&&!!cust.group&&cust.disp!=='dist';
+  const title=compare?(prefixOf(code)||labOf(code)):titleFor(code);
+  const q=compare?stemOf(code):subtitleFor(code);
+  if(cust.disp==='dist'){
+    const rows=years.map(y=>{const st=statsFor(code,perYear(y));return st.n?st.p:null;});
+    const stats=years.map(y=>statsFor(code,perYear(y)));
+    const nTxt=years.map((y,i)=>`${y}: ${stats[i].n}`).join(' · ');
+    buildStage(host,{title,q,meta:metaLine(nTxt,false,splitNote),note:T(I18N.ui.modeNote),
+      build:b=>rTrendDist(b,years,rows,sc,pal),
+      table:{head:[T(I18N.ui.yearCol),...sc,T(I18N.ui.meanWord),T(I18N.ui.sd),'n'],
+        rows:years.map((y,i)=>[y,...(rows[i]?rows[i].map(p=>p.toFixed(1)+'%'):sc.map(()=>'–')),stats[i].mean.toFixed(2),stats[i].sd.toFixed(2),stats[i].n])}});
+    return;
+  }
+  const isMean=cust.disp==='mean';
+  let series=[],tblRows=[],tblHead;
+  if(compare){
+    series=codes.map((c,ci)=>{const yrs=yearsOf(c);
+      const data=years.map(y=>yrs.includes(y)?statsFor(c,perYear(y)):null);
+      return {label:labOf(c),color:CAT[ci%CAT.length],
+        data:data.map(s=>s?(isMean?+s.mean.toFixed(3):+s.top2.toFixed(1)):null),
+        se:data.map(s=>s&&isMean?s.se:null),
+        ns:data.map(s=>s?s.n:null)};});
+    tblHead=[T(I18N.ui.var),...years.map(String)];
+    tblRows=codes.map((c,ci)=>[labOf(c),...series[ci].data.map((v,i)=>v==null?'–':(isMean?v.toFixed(2)+' ('+(series[ci].se[i]||0).toFixed(2)+')':v.toFixed(1)+'%'))]);
+  }else if(grouped){
+    const d=I18N.demo[cust.group],cats=d.cats[LANG],arr=WB.demo[cust.group];
+    series=cats.map((cat,k)=>{const data=years.map(y=>{
+        const ii=perYear(y).filter(i=>val(arr,i)===k+1);
+        if(!ii.length)return null;const s=statsFor(code,ii);return s.n?s:null;});
+      return {label:cat,color:CAT[k%CAT.length],
+        data:data.map(s=>s?(isMean?+s.mean.toFixed(3):+s.top2.toFixed(1)):null),
+        se:data.map(s=>s&&isMean?s.se:null),ns:data.map(s=>s?s.n:null)};});
+    series=series.filter(s=>s.data.some(v=>v!=null));
+    tblHead=[d.lab[LANG],...years.map(String)];
+    tblRows=series.map(sr=>[sr.label,...sr.data.map((v,i)=>v==null?'–':(isMean?v.toFixed(2)+' ('+(sr.se[i]||0).toFixed(2)+')':v.toFixed(1)+'%'))]);
+  }else{
+    const data=years.map(y=>statsFor(code,perYear(y)));
+    series=[{label:labOf(code),color:PRIMARY(),
+      data:data.map(s=>s.n?(isMean?+s.mean.toFixed(3):+s.top2.toFixed(1)):null),
+      se:data.map(s=>s.n&&isMean?s.se:null),ns:data.map(s=>s.n)}];
+    tblHead=[T(I18N.ui.yearCol),isMean?`${T(I18N.ui.meanWord)} (${T(I18N.ui.se)})`:T(I18N.ui.shareCol),T(I18N.ui.sd),'n'];
+    tblRows=years.map((y,i)=>[y,series[0].data[i]==null?'–':(isMean?series[0].data[i].toFixed(2)+' ('+(series[0].se[i]||0).toFixed(2)+')':series[0].data[i].toFixed(1)+'%'),data[i].sd.toFixed(2),data[i].n]);
+  }
+  const allN=years.map((y,i)=>`${y}: ${series.reduce((a,sr)=>a+(sr.ns[i]||0),0)}`).join(' · ');
+  let yCfg;
+  if(cust.yzoom){
+    const vals=series.flatMap(sr=>sr.data).filter(v=>v!=null);
+    const lo=Math.min(...vals),hi=Math.max(...vals),pad=Math.max((hi-lo)*0.3,isMean?0.15:2);
+    yCfg=isMean?{min:Math.max(1,Math.floor((lo-pad)*10)/10),max:Math.min(np,Math.ceil((hi+pad)*10)/10),ticks:{}}
+               :{min:Math.max(0,Math.floor(lo-pad)),max:Math.min(100,Math.ceil(hi+pad)),ticks:{callback:v=>v+'%'}};
+  }else{
+    yCfg=isMean?{min:1,max:np,ticks:{stepSize:1}}:{min:0,max:100,ticks:{callback:v=>v+'%'}};
+  }
+  const note=(isMean?T(I18N.ui.errNote)+' ':`${T(I18N.ui.top2Note)} (${top2Labels(code).join(' / ')}). `)+T(I18N.ui.modeNote);
+  buildStage(host,{title,q,meta:metaLine(allN,false,splitNote),note,
+    build:b=>rTrendLine(b,series,years,yCfg,isMean,v=>isMean?(+v).toFixed(2):(+v).toFixed(1)+'%'),
+    table:{head:tblHead,rows:tblRows}});
+}
+
+/* ---------- downloads & share ---------- */
+function dlPng(name){if(!chart)return;const src=chart.canvas,pad=24,head=46;
+  const out=document.createElement('canvas');out.width=src.width+pad*2;out.height=src.height+pad*2+head;
+  const x=out.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,out.width,out.height);
+  x.fillStyle=PRIMARY();x.font='400 23px '+cssv('--wb-head');x.fillText(name.toUpperCase().slice(0,80),pad,31);
+  x.fillStyle=cssv('--wb-muted');x.font='12px '+cssv('--wb-font');x.fillText('Wissenschaftsbarometer Schweiz',pad,30+head-22);
+  x.drawImage(src,pad,pad+head);const a=document.createElement('a');a.download=slug(name)+'.png';a.href=out.toDataURL('image/png');a.click();}
+function dlCsv(){if(!lastTable)return;const lines=[lastTable.head.join(';'),...lastTable.rows.map(r=>r.map(c=>String(c).replace('%','')).join(';'))];
+  const b=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.download=slug(lastTable.name)+'.csv';a.href=URL.createObjectURL(b);a.click();}
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9äöü]+/g,'-').replace(/(^-|-$)/g,'').slice(0,48)||'wb';
+function syncHash(){
+  const p=new URLSearchParams();
+  p.set('l',LANG);p.set('m',TAB==='t'?'t':'q');
+  if(!isTrend())p.set('y',cust.y);
+  p.set('s',cust.sec);p.set('v',cust.var);
+  if(cust.cmp.length>1)p.set('c',cust.cmp.join('.'));
+  if(cust.group)p.set('g',cust.group);
+  const f=Object.keys(cust.filt).filter(d=>cust.filt[d]&&cust.filt[d].length).map(d=>d+':'+cust.filt[d].join('.')).join('|');
+  if(f)p.set('f',f);
+  p.set('d',cust.disp);p.set('t',cust.disp==='dist'?cust.dtype:cust.mtype);
+  if(isTrend()&&cust.yzoom)p.set('z','1');
+  history.replaceState(null,'','#'+p.toString());
+}
+function readHash(){
+  if(!location.hash||location.hash.length<2)return;
+  try{
+    const p=new URLSearchParams(location.hash.slice(1));
+    if(p.get('l')&&['de','fr','it','en'].includes(p.get('l')))LANG=p.get('l');
+    if(p.get('m')==='t'||p.get('y')==='trend')TAB='t';
+    if(p.get('y')&&p.get('y')!=='trend')cust.y=p.get('y');
+    if(p.get('s'))cust.sec=p.get('s');
+    if(p.get('v')&&WB.meta[p.get('v')])cust.var=p.get('v');
+    if(p.get('c'))cust.cmp=p.get('c').split('.').filter(c=>WB.meta[c]).slice(0,10);
+    if(p.get('g')!==null)cust.group=p.get('g')||'';
+    if(p.get('f')){cust.filt={};p.get('f').split('|').forEach(part=>{const[d,vs]=part.split(':');
+      if(I18N.demo[d])cust.filt[d]=vs.split('.').map(Number).filter(Boolean);});}
+    if(p.get('d'))cust.disp=p.get('d');
+    if(p.get('t')){if(cust.disp==='dist')cust.dtype=p.get('t');else cust.mtype=p.get('t');}
+    cust.yzoom=p.get('z')==='1';
+  }catch(e){}
+}
+
+/* ---------- availability ---------- */
+function varAvailable(c){
+  if(isTrend())return isTrendable(c);
+  return yearsOf(c).includes(+cust.y);}
+function secsAvailable(){return SECORDER.filter(s=>Object.keys(WB.meta).some(c=>WB.meta[c].sec===s&&varAvailable(c)));}
+function varsInSec(sec){return Object.keys(WB.meta).filter(c=>WB.meta[c].sec===sec&&varAvailable(c));}
+function groupDims(){return isTrend()?['lang','gender','age','edu','pol']:Object.keys(I18N.demo).filter(k=>I18N.demo[k].yrs.includes(+cust.y));}
+function fixSelection(){
+  const secs=secsAvailable();
+  if(!secs.includes(cust.sec))cust.sec=secs[0];
+  let vs=varsInSec(cust.sec);
+  if(!vs.includes(cust.var)){
+    if(varAvailable(cust.var))cust.sec=WB.meta[cust.var].sec;
+    else cust.var=vs[0];
+  }
+  cust.cmp=cust.cmp.filter(c=>varAvailable(c)&&blockOfC(c)===blockOfC(cust.var));
+  if(cust.cmp.length&&cust.cmp[0]!==cust.var){cust.cmp=cust.cmp.filter(c=>c!==cust.var);cust.cmp.unshift(cust.var);}
+  cust.cmp=cust.cmp.slice(0,cmpCap());
+  if(cust.cmp.length>1)cust.group='';
+  if(cust.group&&!groupDims().includes(cust.group))cust.group='';
+  for(const dim of Object.keys(cust.filt))if(!groupDims().includes(dim))delete cust.filt[dim];
+  if(isTrend()){
+    if(!['dist','mean','top2'].includes(cust.disp))cust.disp='mean';
+    if(cust.cmp.length&&cust.disp==='dist')cust.disp='mean';
+  }
+  else if(!['dist','mean'].includes(cust.disp))cust.disp='dist';
+}
+function cmpCap(){return isTrend()?9:10;}
+
+/* ---------- UI ---------- */
+function fill(){
+  document.getElementById('hdr-title').textContent=T(I18N.ui.title);
+  document.getElementById('hdr-sub').textContent=T(I18N.ui.sub);
+  document.getElementById('tab-q').textContent=T(I18N.ui.tabQ);
+  document.getElementById('tab-t').textContent=T(I18N.ui.tabT);
+  document.getElementById('tab-i').textContent=T(I18N.ui.tabI);
+  document.getElementById('e-lede').textContent=T(isTrend()?I18N.ui.eLedeT:I18N.ui.eLedeQ);
+  document.getElementById('i-lede').textContent=T(I18N.ui.iLede);
+  document.getElementById('i-notes').innerHTML=T(I18N.ui.iNotes);
+  document.getElementById('foot').innerHTML=T(I18N.ui.foot);
+  document.getElementById('lb-year').textContent=T(I18N.ui.year);
+  document.getElementById('lb-sec').textContent=T(I18N.ui.sec);
+  document.getElementById('lb-var-t').textContent=T(I18N.ui.var);
+  document.getElementById('lb-group').textContent=T(I18N.ui.group);
+  document.getElementById('lb-filter').textContent=T(I18N.ui.filter);
+  document.getElementById('lb-display').textContent=T(I18N.ui.display);
+  document.getElementById('i-head').innerHTML='<tr>'+I18N.method.head[LANG].map(h=>`<th>${h}</th>`).join('')+'</tr>';
+  document.getElementById('i-body').innerHTML=I18N.method.rows.map(r=>`<tr><th>${T(r.y)}</th><td>${T(r.m)}</td><td>${T(r.f)}</td><td>${T(r.n)}</td><td>${T(r.o)}</td></tr>`).join('');
+}
+function secName(s){return T(WB_T3.sec[s]||{});}
+
+/* generic single-select dropdown (button + panel) */
+let openPanel=null;
+function closePanels(){if(openPanel){openPanel.panel.classList.remove('open');openPanel.btn.setAttribute('aria-expanded','false');openPanel=null;}closeFL();}
+function makeDD(hostEl,{value,options,groups,onPick}){
+  hostEl.innerHTML=`<button class="dd-btn" aria-haspopup="listbox" aria-expanded="false"><span class="dd-label"></span><span class="dd-car">▾</span></button><div class="dd-panel" role="listbox"></div>`;
+  const btn=hostEl.querySelector('.dd-btn'),label=btn.querySelector('.dd-label'),panel=hostEl.querySelector('.dd-panel');
+  label.textContent=value?labOf(value):'…';
+  let html='';
+  (groups||[{items:options}]).forEach(g=>{
+    if(g.title)html+=`<div class="dd-grp">${g.title}</div>`;
+    g.items.forEach(c=>{html+=`<div class="dd-opt" role="option" data-c="${c}" aria-selected="${c===value}">${labOf(c)}</div>`;});});
+  panel.innerHTML=html;
+  panel.querySelectorAll('.dd-opt').forEach(o=>o.onclick=e=>{e.stopPropagation();closePanels();onPick(o.dataset.c);});
+  btn.onclick=e=>{e.stopPropagation();
+    const was=panel.classList.contains('open');closePanels();
+    if(!was){panel.classList.add('open');btn.setAttribute('aria-expanded','true');openPanel={panel,btn};
+      const sel=panel.querySelector('.dd-opt[aria-selected="true"]');if(sel)sel.scrollIntoView({block:'nearest'});}};
+}
+function buildControls(){
+  fixSelection();
+  document.getElementById('e-lede').textContent=T(isTrend()?I18N.ui.eLedeT:I18N.ui.eLedeQ);
+  /* year (Querschnitt only) */
+  document.getElementById('f-year').classList.toggle('hidden',isTrend());
+  document.getElementById('row-head').classList.toggle('noyear',isTrend());
+  if(!isTrend()){
+    const ysel=document.getElementById('c-year');ysel.innerHTML='';
+    [['2016','2016'],['2019','2019'],['2020',T(I18N.ui.covidEd)],['2022','2022'],['2025','2025']].forEach(([v,t])=>{
+      const o=document.createElement('option');o.value=v;o.textContent=t;if(v===cust.y)o.selected=true;ysel.appendChild(o);});
+    ysel.onchange=e=>{cust.y=e.target.value;buildControls();render();};
+  }
+  /* topic */
+  const ssel=document.getElementById('c-sec');ssel.innerHTML='';
+  secsAvailable().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=secName(s);if(s===cust.sec)o.selected=true;ssel.appendChild(o);});
+  ssel.onchange=e=>{cust.sec=e.target.value;cust.var=varsInSec(cust.sec)[0];cust.cmp=[];buildControls();render();};
+  buildQuestionRows();
+  /* group */
+  const gsel=document.getElementById('c-group');gsel.innerHTML=`<option value="">${T(I18N.ui.none)}</option>`;
+  groupDims().forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=I18N.demo[k].lab[LANG];if(k===cust.group)o.selected=true;gsel.appendChild(o);});
+  gsel.disabled=cust.cmp.length>1||(isTrend()&&cust.disp==='dist');
+  gsel.onchange=e=>{cust.group=e.target.value;buildControls();render();};
+  buildFilter();
+  /* display */
+  const dhost=document.getElementById('c-display');
+  const opts=isTrend()
+    ?(cust.cmp.length?[['mean',I18N.ui.mean],['top2',I18N.ui.top2]]:[['dist',I18N.ui.dist],['mean',I18N.ui.mean],['top2',I18N.ui.top2]])
+    :[['dist',I18N.ui.dist],['mean',I18N.ui.mean]];
+  dhost.innerHTML=opts.map(o=>`<button data-d="${o[0]}" aria-pressed="${cust.disp===o[0]}">${T(o[1])}</button>`).join('');
+  dhost.querySelectorAll('button').forEach(b=>b.onclick=()=>{cust.disp=b.dataset.d;buildControls();render();});
+  buildChartTypes();
+}
+function buildQuestionRows(){
+  const compare=cust.cmp.length>0;
+  const cbt=document.getElementById('cmp-toggle');
+  cbt.textContent=compare?T(I18N.ui.cmpOff):T(I18N.ui.cmpOn);
+  cbt.onclick=()=>{cust.cmp=compare?[]:[cust.var];buildControls();render();};
+  const sameBlock=varsInSec(cust.sec).filter(c=>blockOfC(c)===blockOfC(cust.var));
+  const canCompare=sameBlock.length>1;
+  cbt.classList.toggle('hidden',!canCompare&&!compare);
+  /* main question dropdown */
+  const vs=varsInSec(cust.sec);
+  const byBlock={};vs.forEach(c=>{const b=blockOfC(c)||'x';(byBlock[b]=byBlock[b]||[]).push(c);});
+  const groups=Object.keys(byBlock).map(b=>({title:Object.keys(byBlock).length>1?T(WB_T3.prefix[b]||WB_T.prefix[b]||{}):'',items:byBlock[b]}));
+  makeDD(document.getElementById('dd-host-0'),{value:cust.var,groups,
+    onPick:c=>{cust.var=c;cust.cmp=cust.cmp.length?[c]:[];buildControls();render();}});
+  /* compare rows */
+  const rows=document.getElementById('cmp-rows');rows.innerHTML='';
+  const add=document.getElementById('cmp-add');
+  add.classList.toggle('hidden',!compare);
+  if(compare){
+    cust.cmp.slice(1).forEach((c,k)=>{
+      const row=document.createElement('div');row.className='cmp-row';
+      const lbl=document.createElement('span');lbl.style.cssText='flex:0 0 auto;font-size:11.5px;font-weight:600;color:var(--wb-muted);width:64px';
+      lbl.textContent=`${T(I18N.ui.varN)} ${k+2}`;
+      const host=document.createElement('div');host.className='dd-host';
+      const x=document.createElement('button');x.className='cmp-x';x.textContent='✕';x.title='✕';
+      x.onclick=()=>{cust.cmp=cust.cmp.filter(cc=>cc!==c);if(cust.cmp.length===1)cust.cmp=[cust.var];buildControls();render();};
+      row.append(lbl,host,x);rows.appendChild(row);
+      const avail=sameBlock.filter(cc=>cc===c||!cust.cmp.includes(cc));
+      makeDD(host,{value:c,options:avail,onPick:nc=>{cust.cmp[k+1]=nc;buildControls();render();}});
+    });
+    const note=document.createElement('div');note.className='dd-note';note.style.padding='0';note.textContent=T(I18N.ui.cmpNote).replace('{n}',cmpCap());
+    rows.appendChild(note);
+    add.textContent=T(I18N.ui.cmpAdd);
+    const remaining=sameBlock.filter(c=>!cust.cmp.includes(c));
+    add.disabled=cust.cmp.length>=cmpCap()||!remaining.length;
+    add.onclick=()=>{if(remaining.length&&cust.cmp.length<cmpCap()){cust.cmp.push(remaining[0]);buildControls();render();}};
+  }
+}
+function buildChartTypes(){
+  const host=document.getElementById('c-chart'),lb=document.getElementById('lb-chart');
+  if(isTrend()){
+    if(cust.disp==='dist'){
+      lb.textContent=T(I18N.ui.chart);
+      host.innerHTML=`<button aria-pressed="true">${T(I18N.ui.t_stacked)}</button>`;
+    }else{
+      lb.textContent=T(I18N.ui.yaxis);
+      host.innerHTML=`<button data-z="0" aria-pressed="${!cust.yzoom}">${T(I18N.ui.yfull)}</button><button data-z="1" aria-pressed="${cust.yzoom}">${T(I18N.ui.yzoom)}</button>`;
+      host.querySelectorAll('button').forEach(b=>b.onclick=()=>{cust.yzoom=b.dataset.z==='1';buildChartTypes();render();});
+    }
+    return;
+  }
+  lb.textContent=T(I18N.ui.chart);
+  let opts;
+  if(cust.disp==='dist'){
+    if(cust.cmp.length>1)opts=[['stacked',I18N.ui.t_stacked],['diverging',I18N.ui.t_diverging]];
+    else{opts=[['stacked',I18N.ui.t_stacked],['grouped',I18N.ui.t_grouped],['diverging',I18N.ui.t_diverging]];
+      if(!cust.group)opts.push(['donut',I18N.ui.t_donut]);}
+    if(!opts.some(o=>o[0]===cust.dtype))cust.dtype='stacked';
+  }else{
+    opts=[['bars',I18N.ui.t_bars],['lollipop',I18N.ui.t_lollipop],['radar',I18N.ui.t_radar]];
+    if(cust.cmp.length>1&&cust.cmp.length<3)opts=opts.filter(o=>o[0]!=='radar');
+    if(!opts.some(o=>o[0]===cust.mtype))cust.mtype='bars';
+  }
+  const sel=cust.disp==='dist'?cust.dtype:cust.mtype;
+  host.innerHTML=opts.map(o=>`<button data-t="${o[0]}" aria-pressed="${o[0]===sel}">${T(o[1])}</button>`).join('');
+  host.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(cust.disp==='dist')cust.dtype=b.dataset.t;else cust.mtype=b.dataset.t;buildChartTypes();render();});
+}
+function buildFilter(){
+  const btn=document.getElementById('fl-btn'),label=document.getElementById('fl-label'),panel=document.getElementById('fl-panel');
+  const nact=Object.values(cust.filt).reduce((a,v)=>a+(v&&v.length?1:0),0);
+  label.textContent=nact?`${nact} ${T(I18N.ui.nFilter)}`:T(I18N.ui.noFilter);
+  let html=`<div class="dd-sticky"><button id="fl-clear">${T(I18N.ui.clear)}</button></div>`;
+  groupDims().forEach(dim=>{
+    html+=`<div class="dd-grp">${I18N.demo[dim].lab[LANG]}</div>`;
+    I18N.demo[dim].cats[LANG].forEach((cat,i)=>{
+      const ck=(cust.filt[dim]||[]).includes(i+1)?'checked':'';
+      html+=`<label class="dd-opt"><input type="checkbox" data-d="${dim}" data-v="${i+1}" ${ck}>${cat}</label>`;});});
+  panel.innerHTML=html;
+  panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
+    const d=cb.dataset.d,v=+cb.dataset.v;
+    cust.filt[d]=cust.filt[d]||[];
+    if(cb.checked)cust.filt[d].push(v);else cust.filt[d]=cust.filt[d].filter(x=>x!==v);
+    const na=Object.values(cust.filt).reduce((a,x)=>a+(x&&x.length?1:0),0);
+    label.textContent=na?`${na} ${T(I18N.ui.nFilter)}`:T(I18N.ui.noFilter);
+    render();});
+  panel.querySelector('#fl-clear').onclick=()=>{cust.filt={};buildFilter();render();};
+  btn.onclick=e=>{e.stopPropagation();
+    const was=panel.classList.contains('open');closePanels();
+    if(!was){panel.classList.add('open');btn.setAttribute('aria-expanded','true');}};
+}
+function closeFL(){const p=document.getElementById('fl-panel');if(p)p.classList.remove('open');const b=document.getElementById('fl-btn');if(b)b.setAttribute('aria-expanded','false');}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd-panel')&&!e.target.closest('.dd-btn'))closePanels();});
+function setTab(t){TAB=t;
+  document.getElementById('panel-e').classList.toggle('hidden',t==='i');
+  document.getElementById('panel-i').classList.toggle('hidden',t!=='i');
+  document.getElementById('tab-q').setAttribute('aria-selected',t==='q');
+  document.getElementById('tab-t').setAttribute('aria-selected',t==='t');
+  document.getElementById('tab-i').setAttribute('aria-selected',t==='i');
+  if(t!=='i'){buildControls();render();}
+}
+function setLang(l){LANG=l;document.querySelectorAll('#langs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===l));fill();if(TAB!=='i'){buildControls();render();}else fill();}
+document.querySelectorAll('#langs button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+document.getElementById('tab-q').onclick=()=>setTab('q');
+document.getElementById('tab-t').onclick=()=>setTab('t');
+document.getElementById('tab-i').onclick=()=>setTab('i');
+readHash();
+document.querySelectorAll('#langs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===LANG));
+fill();setTab(TAB==='i'?'q':TAB);
+</script>
