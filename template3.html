@@ -276,13 +276,61 @@ const I18N={
   age:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Altersgruppe",fr:"Tranche d'âge",it:"Fascia d'età",en:"Age group"},cats:{de:["15–34","35–54","55+"],fr:["15–34","35–54","55+"],it:["15–34","35–54","55+"],en:["15–34","35–54","55+"]}},
   edu:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Bildung",fr:"Formation",it:"Formazione",en:"Education"},cats:{de:["Obligatorische Schule","Sekundarstufe II","Tertiärstufe"],fr:["Scolarité obligatoire","Secondaire II","Tertiaire"],it:["Scuola dell'obbligo","Secondario II","Terziario"],en:["Compulsory school","Upper secondary","Tertiary"]}},
   pol:{yrs:[2016,2019,2020,2022,2025],lab:{de:"Politische Haltung",fr:"Orientation politique",it:"Orientamento politico",en:"Political leaning"},cats:{de:["links","Mitte","rechts"],fr:["gauche","centre","droite"],it:["sinistra","centro","destra"],en:["left","centre","right"]}},
-  party:{yrs:[2016,2022,2025],lab:{de:"Partei",fr:"Parti",it:"Partito",en:"Party"},cats:{de:["SVP","SP","FDP","Mitte","GRÜNE","GLP","andere","keine"],fr:["UDC","PS","PLR","Le Centre","Verts","PVL","autre","aucun"],it:["UDC","PS","PLR","Il Centro","Verdi","PVL","altro","nessuno"],en:["SVP","SP","FDP","Centre","Greens","GLP","other","none"]}},
+  party:{yrs:[2016,2022,2025],special:'party',lab:{de:"Partei",fr:"Parti",it:"Partito",en:"Party"}},
   urban:{yrs:[2019,2020,2022],lab:{de:"Siedlungsart",fr:"Type de commune",it:"Tipo di comune",en:"Settlement type"},cats:{de:["städtisch","intermediär","ländlich"],fr:["urbain","intermédiaire","rural"],it:["urbano","intermedio","rurale"],en:["urban","intermediate","rural"]}},
   segment:{yrs:[2025],lab:{de:"Publika der Wissenschaftskommunikation",fr:"Publics de la communication scientifique",it:"Pubblici della comunicazione scientifica",en:"Audiences of science communication"},cats:{de:["Passive Unterstützer","Sciencephiles","Kritisch Interessierte","Skeptische"],fr:["Soutiens passifs","Scientophiles","Intéressés critiques","Sceptiques"],it:["Sostenitori passivi","Scientofili","Interessati critici","Scettici"],en:["Passive supporters","Science-philes","Critically interested","Skeptics"]}}
  }
 };
 const SECORDER=['interest','themes','trust','attitudes','sources','activities','literacy','ai','criticism','populism','covid','desinfo','pseudo','motive','verdrossen'];
 const SINGLE_BLOCKS=new Set(['interest','media_satisf','ai_use','ai_trust','sci_pol','media_att','cov_att']);
+/* unified party ids (index = code in demo.party, base36). n>=30 shown individually, rest pooled. */
+const PARTIES=[null,
+ {k:'svp',c:'#2F7A1F',l:{de:'SVP',fr:'UDC',it:'UDC',en:'SVP'}},
+ {k:'sp',c:'#E4032E',l:{de:'SP',fr:'PS',it:'PS',en:'SP'}},
+ {k:'fdp',c:'#1E5FA9',l:{de:'FDP',fr:'PLR',it:'PLR',en:'FDP'}},
+ {k:'mitte',c:'#EF7D00',l:{de:'Die Mitte',fr:'Le Centre',it:'Il Centro',en:'The Centre'}},
+ {k:'cvp',c:'#EF7D00',l:{de:'CVP',fr:'PDC',it:'PPD',en:'CVP'}},
+ {k:'bdp',c:'#FFD500',l:{de:'BDP',fr:'PBD',it:'PBD',en:'BDP'}},
+ {k:'gruene',c:'#7DB929',l:{de:'GRÜNE',fr:'Les VERT-E-S',it:'I Verdi',en:'Greens'}},
+ {k:'glp',c:'#C5D42E',l:{de:'GLP',fr:"Vert'libéraux",it:'Verdi liberali',en:'GLP'}},
+ {k:'evp',c:'#F2C400',l:{de:'EVP',fr:'PEV',it:'PEV',en:'EVP'}},
+ {k:'edu',c:'#8A6E4B',l:{de:'EDU',fr:'UDF',it:'UDF',en:'EDU'}},
+ {k:'lega',c:'#4C6FB5',l:{de:'Lega',fr:'Lega',it:'Lega',en:'Lega'}},
+ {k:'mcg',c:'#F3B229',l:{de:'MCG',fr:'MCG',it:'MCG',en:'MCG'}},
+ {k:'csp',c:'#D0578B',l:{de:'CSP',fr:'PCS',it:'PCS',en:'CSP'}},
+ {k:'pda',c:'#9E1B32',l:{de:'PdA',fr:'PST-POP',it:'PdA',en:'PdA'}},
+ {k:'sol',c:'#C0392B',l:{de:'solidaritéS',fr:'solidaritéS',it:'solidaritéS',en:'solidaritéS'}},
+ {k:'al',c:'#B01E3F',l:{de:'AL',fr:'AL',it:'AL',en:'AL'}},
+ {k:'piraten',c:'#F08A00',l:{de:'Piratenpartei',fr:'Parti pirate',it:'Partito pirata',en:'Pirate Party'}},
+ {k:'gb',c:'#5E9E3C',l:{de:'GB',fr:'GB',it:'GB',en:'GB'}},
+ {k:'ldp',c:'#9AA0A6',l:{de:'LDP',fr:'LDP',it:'LDP',en:'LDP'}},
+ {k:'lps',c:'#9AA0A6',l:{de:'LPS',fr:'PLS',it:'PLS',en:'LPS'}},
+ {k:'sd',c:'#9AA0A6',l:{de:'SD',fr:'DS',it:'DS',en:'SD'}},
+ {k:'adg',c:'#9AA0A6',l:{de:'AdG',fr:'AdG',it:'AdG',en:'AdG'}},
+ {k:'andere',c:'#9AA0A6',l:{de:'andere/mehrere Parteien',fr:'autres/plusieurs partis',it:'altri/più partiti',en:'other/multiple parties'}},
+ {k:'keine',c:'#C6CAD0',l:{de:'keine Partei',fr:'aucun parti',it:'nessun partito',en:'no party'}},
+ {k:'wn',c:'#DFDBD5',l:{de:'weiss nicht / keine Angabe',fr:'ne sait pas / sans réponse',it:'non sa / nessuna risposta',en:"don't know / no answer"}}];
+const PARTY_MIN_N=30;
+const pval=(s,i)=>parseInt(s[i],36)||0;
+const partyCatsCache={};
+function partyCats(year){
+  const key=year+'|'+LANG;
+  if(partyCatsCache[key])return partyCatsCache[key];
+  const wc=YCODE[year],s=WB.demo.party,counts=new Array(PARTIES.length).fill(0);
+  for(let i=0;i<WB.n;i++)if(WB.wave[i]===wc)counts[pval(s,i)]++;
+  const TAIL={andere:23,keine:24,wn:25};
+  const big=[];let pooled=[TAIL.andere];
+  for(let id=1;id<PARTIES.length;id++){
+    if(id===TAIL.andere||id===TAIL.keine||id===TAIL.wn)continue;
+    if(counts[id]>=PARTY_MIN_N)big.push(id);else if(counts[id]>0)pooled.push(id);
+  }
+  big.sort((a,b)=>counts[b]-counts[a]);
+  const cats=big.map(id=>({ids:[id],label:PARTIES[id].l[LANG],color:PARTIES[id].c}));
+  cats.push({ids:pooled,label:PARTIES[TAIL.andere].l[LANG],color:PARTIES[TAIL.andere].c});
+  cats.push({ids:[TAIL.keine],label:PARTIES[TAIL.keine].l[LANG],color:PARTIES[TAIL.keine].c});
+  if(year===2025&&counts[TAIL.wn]>0)cats.push({ids:[TAIL.wn],label:PARTIES[TAIL.wn].l[LANG],color:PARTIES[TAIL.wn].c});
+  partyCatsCache[key]=cats;return cats;
+}
 
 /* ---------- lookups across WB_T (2025) and WB_T3 (extension) ---------- */
 const cssv=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -326,11 +374,24 @@ function top2Labels(c){const sc=scaleLabels(c);return sc.slice(-2).map(s=>s.repl
 const val=(s,i)=>s.charCodeAt(i)-48;
 function yearsOf(c){return WB.meta[c].waves;}
 function isTrendable(c){return yearsOf(c).length>1;}
-function filtPass(i){
+function compileFilters(){
+  const out=[];
   for(const dim in cust.filt){const sel=cust.filt[dim];if(!sel||!sel.length)continue;
-    const v=val(WB.demo[dim],i);if(!sel.includes(v))return false;}
+    if(dim==='party'){
+      const yr=isTrend()?null:+cust.y;if(yr===null)continue;
+      const cats=partyCats(yr),allowed=new Set();
+      sel.forEach(ci=>{const c=cats[ci-1];if(c)c.ids.forEach(id=>allowed.add(id));});
+      out.push({s:WB.demo.party,test:v=>allowed.has(v),dec:pval});
+    }else{
+      const st=new Set(sel);
+      out.push({s:WB.demo[dim],test:v=>st.has(v),dec:val});
+    }}
+  return out;}
+let FILTC=[];
+function filtPass(i){
+  for(const f of FILTC){if(!f.test(f.dec(f.s,i)))return false;}
   return true;}
-function idxYear(year){const wc=YCODE[year],w=WB.wave,out=[];
+function idxYear(year){FILTC=compileFilters();const wc=YCODE[year],w=WB.wave,out=[];
   for(let i=0;i<WB.n;i++)if(w[i]===wc&&filtPass(i))out.push(i);return out;}
 function statsFor(code,idxs){
   const s=WB.vars[code],np=WB.meta[code].np,W=WB.weights;
@@ -348,6 +409,13 @@ function statsFor(code,idxs){
 function groupsFor(year){
   const idxs=idxYear(year);
   if(!cust.group)return [{label:T(I18N.ui.total),idxs}];
+  if(cust.group==='party'){
+    const cats=partyCats(year),s=WB.demo.party,out=[];
+    for(const c of cats){const st=new Set(c.ids);
+      const ii=idxs.filter(i=>st.has(pval(s,i)));
+      if(ii.length)out.push({label:c.label,idxs:ii,color:c.color});}
+    return out.length?out:[{label:T(I18N.ui.total),idxs}];
+  }
   const d=I18N.demo[cust.group];if(!d)return [{label:T(I18N.ui.total),idxs}];
   const cats=d.cats[LANG],arr=WB.demo[cust.group],out=[];
   for(let c=1;c<=cats.length;c++){const ii=idxs.filter(i=>val(arr,i)===c);if(ii.length)out.push({label:cats[c-1],idxs:ii});}
@@ -388,11 +456,11 @@ function donutLabelPlugin(){return{id:'dl',afterDatasetsDraw(c){const{ctx}=c;ctx
     const a=(arc.startAngle+arc.endAngle)/2,r=(arc.innerRadius+arc.outerRadius)/2;
     ctx.fillStyle=textOn(cols[i]);ctx.fillText(Math.round(v)+'%',arc.x+Math.cos(a)*r,arc.y+Math.sin(a)*r);});
   ctx.restore();}};}
-function meanLabelPlugin(lolli){return{id:'ml',afterDatasetsDraw(c){const{ctx}=c;const xs=c.scales.x;const se=c.$se||[],mn=c.$mean||[];
+function meanLabelPlugin(lolli){return{id:'ml',afterDatasetsDraw(c){const{ctx}=c;const xs=c.scales.x;const se=c.$se||[],mn=c.$mean||[],cols=c.$cols||[];
   if(!mn.length)return;
   ctx.save();c.getDatasetMeta(0).data.forEach((el,i)=>{
     if(mn[i]===undefined)return;
-    if(lolli){ctx.fillStyle=PRIMARY();ctx.beginPath();ctx.arc(el.x,el.y,6,0,7);ctx.fill();}
+    if(lolli){ctx.fillStyle=cols[i]||PRIMARY();ctx.beginPath();ctx.arc(el.x,el.y,6,0,7);ctx.fill();}
     const s=se[i]||0;if(s>0){const x1=xs.getPixelForValue(mn[i]-s),x2=xs.getPixelForValue(mn[i]+s);
       ctx.strokeStyle=cssv('--wb-ink');ctx.lineWidth=1.5;ctx.beginPath();
       ctx.moveTo(x1,el.y);ctx.lineTo(x2,el.y);ctx.moveTo(x1,el.y-5);ctx.lineTo(x1,el.y+5);ctx.moveTo(x2,el.y-5);ctx.lineTo(x2,el.y+5);ctx.stroke();}
@@ -437,9 +505,9 @@ function rDiverging(host,labels,rows,sc,pal){
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${Math.abs(c.raw[1]-c.raw[0]).toFixed(1)}%`}}}}});
   legend(host,sc.map((t,i)=>({t,c:pal[i]})));
 }
-function rGrouped(host,glabels,rows,sc,pal){
+function rGrouped(host,glabels,rows,sc,pal,gcols){
   const cv=box(host,360);
-  const ds=glabels.map((g,gi)=>({label:g,data:rows[gi].map(p=>+p.toFixed(1)),backgroundColor:glabels.length>1?CAT[gi%CAT.length]:PRIMARY(),borderRadius:3,maxBarThickness:46}));
+  const ds=glabels.map((g,gi)=>({label:g,data:rows[gi].map(p=>+p.toFixed(1)),backgroundColor:(gcols&&gcols[gi])||(glabels.length>1?CAT[gi%CAT.length]:PRIMARY()),borderRadius:3,maxBarThickness:46}));
   destroy();chart=new Chart(cv,{type:'bar',data:{labels:sc,datasets:ds},plugins:[pctLabelPluginV()],
     options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},layout:{padding:{top:16}},
       scales:{y:{beginAtZero:true,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{callback:v=>v+'%',color:cssv('--wb-muted')}},
@@ -453,16 +521,16 @@ function rDonut(host,sc,pcts,pal){
     options:{responsive:true,maintainAspectRatio:false,cutout:'56%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw}%`}}}}});
   legend(host,sc.map((t,i)=>({t,c:pal[i]})));
 }
-function rMeanBars(host,labels,means,ses,np,lolli){
+function rMeanBars(host,labels,means,ses,np,lolli,gcols){
   const h=clamp(60+labels.length*44,140,620),cv=box(host,h);
-  const ds={data:means.map(m=>+m.toFixed(3)),backgroundColor:lolli?cssv('--wb-line'):PRIMARY(),borderRadius:lolli?0:4,
+  const ds={data:means.map(m=>+m.toFixed(3)),backgroundColor:lolli?cssv('--wb-line'):(gcols||PRIMARY()),borderRadius:lolli?0:4,
     maxBarThickness:lolli?4:34,minBarLength:2};
   destroy();chart=new Chart(cv,{type:'bar',data:{labels,datasets:[ds]},plugins:[meanLabelPlugin(lolli)],
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:300},layout:{padding:{right:70}},
       scales:{x:{min:1,max:np,grid:{color:cssv('--wb-line')},border:{display:false},ticks:{stepSize:1,color:cssv('--wb-muted'),font:{size:11}}},
         y:{grid:{display:false},border:{display:false},ticks:{color:cssv('--wb-ink'),font:{size:12.5},autoSkip:false,crossAlign:'far'}}},
       plugins:{legend:{display:false},tooltip:{enabled:false}}}});
-  chart.$se=ses;chart.$mean=means;chart.update();
+  chart.$se=ses;chart.$mean=means;chart.$cols=gcols||[];chart.update();
 }
 function rRadar(host,labels,means,np){
   const cv=box(host,400);destroy();
@@ -541,7 +609,9 @@ function metaLine(nTxt,split,extra){
   let s=`${T(I18N.ui.basis)}: ${nTxt} · ${T(I18N.ui.weighted)}`;
   if(split)s+=' · '+T(I18N.ui.split);
   const fdims=Object.keys(cust.filt).filter(d=>cust.filt[d]&&cust.filt[d].length);
-  if(fdims.length){s+=' · '+T(I18N.ui.filter)+': '+fdims.map(d=>cust.filt[d].map(v=>I18N.demo[d].cats[LANG][v-1]).join('/')).join(', ');}
+  if(fdims.length){s+=' · '+T(I18N.ui.filter)+': '+fdims.map(d=>{
+    if(d==='party'&&!isTrend()){const cats=partyCats(+cust.y);return cust.filt[d].map(v=>cats[v-1]?cats[v-1].label:'').filter(Boolean).join('/');}
+    return cust.filt[d].map(v=>I18N.demo[d].cats[LANG][v-1]).join('/');}).join(', ');}
   if(extra)s+=' · '+extra;
   return s;}
 
@@ -578,6 +648,7 @@ function renderYear(host,year){
   const gs=groupsFor(year);
   const stats=gs.map(g=>statsFor(code,g.idxs));
   const glabels=gs.map((g,i)=>`${g.label} (n = ${stats[i].n})`);
+  const gcols=gs.some(g=>g.color)?gs.map((g,i)=>g.color||CAT[i%CAT.length]):null;
   const totN=cust.group?stats.reduce((a,s)=>a+s.n,0):stats[0].n;
   const base={title:titleFor(code),q:subtitleFor(code),meta:metaLine(`${year===2020?T(I18N.ui.covidEd):year}, n = ${totN}`,split)};
   if(cust.disp==='dist'){
@@ -585,7 +656,7 @@ function renderYear(host,year){
     const tbl={head:[T(I18N.ui.cat),...sc,T(I18N.ui.meanWord),T(I18N.ui.sd),'n'],
       rows:glabels.map((l,i)=>[gs[i].label,...rows[i].map(p=>p.toFixed(1)+'%'),stats[i].mean.toFixed(2),stats[i].sd.toFixed(2),stats[i].n])};
     if(cust.dtype==='donut'&&!cust.group)buildStage(host,{...base,build:b=>rDonut(b,sc,rows[0],pal),table:tbl});
-    else if(cust.dtype==='grouped')buildStage(host,{...base,build:b=>rGrouped(b,glabels,rows,sc,pal),table:tbl});
+    else if(cust.dtype==='grouped')buildStage(host,{...base,build:b=>rGrouped(b,glabels,rows,sc,pal,gcols),table:tbl});
     else if(cust.dtype==='diverging')buildStage(host,{...base,build:b=>rDiverging(b,glabels,rows,sc,pal),table:tbl});
     else buildStage(host,{...base,build:b=>rStacked(b,glabels,rows,sc,pal),table:tbl});
   }else{
@@ -593,7 +664,7 @@ function renderYear(host,year){
     const tbl={head:[cust.group?I18N.demo[cust.group].lab[LANG]:T(I18N.ui.cat),T(I18N.ui.meanWord),T(I18N.ui.se),T(I18N.ui.sd),'n'],
       rows:glabels.map((l,i)=>[gs[i].label,means[i].toFixed(2),ses[i].toFixed(2),stats[i].sd.toFixed(2),stats[i].n])};
     if(cust.mtype==='radar')buildStage(host,{...base,build:b=>rRadar(b,glabels,means,np),table:tbl});
-    else buildStage(host,{...base,note:T(I18N.ui.errNote),build:b=>rMeanBars(b,glabels,means,ses,np,cust.mtype==='lollipop'),table:tbl});
+    else buildStage(host,{...base,note:T(I18N.ui.errNote),build:b=>rMeanBars(b,glabels,means,ses,np,cust.mtype==='lollipop',gcols),table:tbl});
   }
 }
 function renderTrend(host){
@@ -723,6 +794,9 @@ function fixSelection(){
   if(cust.cmp.length>1)cust.group='';
   if(cust.group&&!groupDims().includes(cust.group))cust.group='';
   for(const dim of Object.keys(cust.filt))if(!groupDims().includes(dim))delete cust.filt[dim];
+  if(cust.filt.party&&!isTrend()){const ncat=partyCats(+cust.y).length;
+    cust.filt.party=cust.filt.party.filter(v=>v>=1&&v<=ncat);
+    if(!cust.filt.party.length)delete cust.filt.party;}
   if(isTrend()){
     if(!['dist','mean','top2'].includes(cust.disp))cust.disp='mean';
     if(cust.cmp.length&&cust.disp==='dist')cust.disp='mean';
@@ -877,7 +951,8 @@ function buildFilter(){
   let html=`<div class="dd-sticky"><button id="fl-clear">${T(I18N.ui.clear)}</button></div>`;
   groupDims().forEach(dim=>{
     html+=`<div class="dd-grp">${I18N.demo[dim].lab[LANG]}</div>`;
-    I18N.demo[dim].cats[LANG].forEach((cat,i)=>{
+    const cats=(dim==='party')?partyCats(+cust.y).map(c=>c.label):I18N.demo[dim].cats[LANG];
+    cats.forEach((cat,i)=>{
       const ck=(cust.filt[dim]||[]).includes(i+1)?'checked':'';
       html+=`<label class="dd-opt"><input type="checkbox" data-d="${dim}" data-v="${i+1}" ${ck}>${cat}</label>`;});});
   panel.innerHTML=html;

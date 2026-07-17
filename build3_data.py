@@ -114,7 +114,20 @@ gender=enc_map(df['geschl'],{1:1,2:2,3:3})
 age=''.join('0' if a!=a else ('1' if a<35 else '2' if a<55 else '3') for a in df['alter'])
 edu=enc_map(df['bildung'],{1:1,2:1,3:2,4:2,5:2,6:2,7:3,8:3,9:3,10:3})
 pol=enc_map(df['polor'],{1:1,2:1,3:1,4:2,5:3,6:3,7:3})
-party=enc_map(df['partei'],{20:1,19:2,7:3,1:4,3:4,4:4,8:5,10:5,9:6,2:7,5:7,6:7,11:7,12:7,13:7,14:7,15:7,16:7,17:7,18:7,21:7,22:7,23:7,24:7,25:8,26:8})
+# --- party: per-wave code schemes (verified against the original 2016/2022/2025 files) ---
+# unified ids: 1 svp,2 sp,3 fdp,4 mitte,5 cvp,6 bdp,7 gruene,8 glp,9 evp,10 edu,11 lega,12 mcg,
+# 13 csp,14 pda,15 sol,16 al,17 piraten,18 gb,19 ldp,20 lps,21 sd,22 adg,23 andere/mehrere,24 keine,25 wn(2025)
+P16={1:6,2:13,3:5,4:10,5:9,6:3,7:18,8:8,9:7,10:11,11:20,12:14,13:21,14:2,15:1,16:22,20:23,80:23,85:24,90:24,91:24}
+P22={1:4,2:13,3:4,4:4,5:10,6:9,7:3,8:18,9:8,10:7,11:11,12:12,13:20,14:19,15:14,16:15,17:16,18:21,19:2,20:1,21:22,22:17,23:23,24:23,25:24,26:24}
+P25={1:1,2:2,3:3,4:4,5:7,6:9,7:11,8:13,9:8,10:16,11:10,12:17,13:12,14:23,15:24,16:23,17:25}
+B36='0123456789abcdefghijklmnopqrstuvwxyz'
+party=[]
+for i in range(N):
+    x=df['partei'].iloc[i]; w=wave[i]
+    if x!=x: party.append('0'); continue
+    mp=P16 if w==1 else (P22 if w==4 else (P25 if w==5 else None))
+    party.append(B36[mp.get(int(x),0)] if mp else '0')
+party=''.join(party)
 urban=[]
 u19=col('w19_stadtland'); u20=col('w20_stadtland'); u22=col('w22_siedlungsart')
 for i in range(N):

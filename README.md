@@ -12,6 +12,8 @@ No server, no database. Host it anywhere; GitHub Pages recommended.
   (max. 10 questions in cross-sections, 9 in trends) — rows in one chart, or one line each in the trend view.
 - Break down by language region, gender, age, education, political leaning, party (2016/22/25),
   settlement type (2019/20/22) and the **Publika der Wissenschaftskommunikation** (2025 only).
+  The party breakdown shows every party with n ≥ 30 in the selected year (official party colours,
+  sorted by n; per-wave code schemes harmonised from the original data files).
 - **Multi-filters** (checkboxes): OR within a dimension, AND across dimensions.
 - Trend views: stacked distribution columns, mean lines with ±1 SE whiskers, top-2 share lines —
   with value annotations at each point and a **Y-Achse Volle Skala / Ausschnitt** toggle.

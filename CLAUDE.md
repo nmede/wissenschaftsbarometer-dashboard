@@ -32,6 +32,21 @@ Hosted on GitHub Pages, embedded via iframe on wissenschaftsbarometer.ch. User i
   sticky "Zurücksetzen" on top, options in regular case; one-line footer.
 - Brand: red #ED1C24, ramp #FCD2C1→#ED1C24, Bebas Neue (headings, ALL CAPS), Univers w/ fallback.
 
+## Party coding (IMPORTANT discovery)
+The trendfile `partei` carries the ORIGINAL per-wave codes but only the 2022 value-label set —
+labels are WRONG for 2016 and 2025. Verified per-wave schemes (from original .sav files
+Wissenschaftsbarometer_2016/2022/2025.sav, uploads):
+2016 F30: 1 BDP,2 CSP,3 CVP,4 EDU,5 EVP,6 FDP,7 GB,8 GLP,9 Grüne,10 Lega,11 LPS,12 PdA,13 SD,
+14 SP,15 SVP,16 AdG,20 andere,80 mehrere,85/90/91 keine-Varianten.
+2022 F44: labels in file are correct (19 SP, 20 SVP, 7 FDP, 4 Mitte, 3 CVP, 1 BDP, 10 Grüne, 9 GLP …).
+2025 f21: 1 SVP,2 SP,3 FDP,4 Mitte,5 GRÜNE,6 EVP,7 Lega,8 CSP,9 GLP,10 AL,11 EDU,12 Piraten,
+13 MCG,14 andere,15 keine,16 mehrere,17 weiss nicht.
+Pipeline maps to unified ids 1-25 (base36 chars in demo.party; see P16/P22/P25 in build3_data.py).
+Dashboard: parties with n>=30 per year shown individually sorted by n desc (PARTY_MIN_N in template),
+smaller pooled into "andere/mehrere Parteien"; tail order andere -> keine -> wn (wn 2025 only, NOT
+treated as missing per user request). Official party colours in PARTIES constant. 2022 CVP/BDP/Mitte
+merged into "Die Mitte"; 2016 keeps CVP separate. Party filter values = category indices per year.
+
 ## Validation anchors
 vert_wiss top-2 by wave: 57.1/56.4/66.7/58.5/60.0. int_wiss 2025 mean 3.34.
-scipop_verstand top-2: 38.4/27.5/19.4. 283 chartable vars; segment split 2025: 48/22/12/17.
+scipop_verstand top-2: 38.4/27.5/19.4. 283 chartable vars; segment split 2025: 48/22/12/17. Party big-six per year: 2016 SP119/FDP100/SVP90/CVP71/GRÜNE46/GLP39; 2022 SP110/FDP90/Mitte77/SVP71/GRÜNE66/GLP60; 2025 SP176/FDP145/SVP138/Mitte126/GRÜNE70/GLP67.
